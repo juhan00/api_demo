@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .post-list {
+            list-style: none;
+            padding: 0;
+        }
+        .post-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    
+    <h2>Posts</h2>
+    <ul class="post-list">
+        <!-- Posts will be displayed here -->
+    </ul>
+    
+    <h2>Create Post</h2>
+    <form id="createPostForm">
+        <label for="postTitle">Title:</label><br>
+        <input type="text" id="postTitle" name="postTitle" required><br>
+        
+        <label for="postContent">Content:</label><br>
+        <textarea id="postContent" name="postContent" rows="4" required></textarea><br>
+        
+        <button type="submit">Create Post</button>
+    </form>
+
+    <h1>다중 파일 업로드</h1>
+    <!-- <form action="upload.php" method="POST" enctype="multipart/form-data"> -->
+    
+    <input type="file" id="file_input" multiple>
+    <button type="button" id="upload_button">업로드</button>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+        
+            const file_input = document.getElementById('file_input');
+            const upload_button = document.getElementById('upload_button');
+
+            upload_button.addEventListener('click', async (event) => {
+                event.preventDefault();
+
+                const files = file_input.files;
+
+                if (files.length > 0) {
+                    const file_data = [];
+
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            file_data.push({
+                                name: file.name,
+                                size: file.size,
+                                content: e.target.result.split(',')[1] // Base64 데이터
+                            });
+
+                            if (file_data.length === files.length) {
+                                uploadFiles(file_data);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            async function uploadFiles(file_data) {
+                const uuid = generateUUID();
+                try {
+                    const response = await fetch('http://localhost/api_test/api/image/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            'uuid': uuid,
+                            'file_data': file_data
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.text();
+                        console.log(result);
+                    } else {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            function generateUUID() {
+                let d = new Date().getTime();
+                if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+                    d += performance.now(); // 추가적인 고정값을 현재 시간에 더해 더 높은 고유성을 확보합니다.
+                }
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = (d + Math.random()*16)%16 | 0;
+                    d = Math.floor(d/16);
+                    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                });
+            }
+
+
+
+
+        // const postList = document.querySelector('.post-list');
+        // const createPostForm = document.getElementById('createPostForm');
+
+        // async function fetchPosts() {
+        //     const response = await fetch('../api/post');
+        //     const data = await response.json();
+
+        //     postList.innerHTML = '';
+        //     data.forEach(post => {
+        //         const postItem = document.createElement('li');
+        //         postItem.className = 'post-item';
+        //         postItem.innerHTML = `
+        //             <h3>${post.title}</h3>
+        //             <p>${post.content}</p>
+        //             <button onclick="deletePost(${post.id})">Delete</button>
+        //         `;
+
+        //         const commentsList = document.createElement('ul');
+        //         post.comments.forEach(comment => {
+        //             const commentItem = document.createElement('li');
+        //             commentItem.textContent = comment.content;
+        //             commentsList.appendChild(commentItem);
+        //         });
+
+        //         postItem.appendChild(commentsList);
+        //         postList.appendChild(postItem);
+        //     });
+        // }
+
+        //     async function deletePost(postId) {
+        //         const response = await fetch(`../api/post?id=${postId}`, {
+        //             method: 'DELETE'
+        //         });
+
+        //         if (response.status === 200) {
+        //             fetchPosts();
+        //         }
+        //     }
+
+        //     createPostForm.addEventListener('submit', async (event) => {
+        //         event.preventDefault();
+
+        //         const postTitle = document.getElementById('postTitle').value;
+        //         const postContent = document.getElementById('postContent').value;
+
+        //         const response = await fetch('../api/post', {
+        //             method: 'POST',
+        //             body: JSON.stringify({
+        //                 title: postTitle,
+        //                 content: postContent
+        //             }),
+        //             headers: {
+        //                 'Content-Type': 'application/json'
+        //             }
+        //         });
+
+        //         if (response.status === 200) {
+        //             fetchPosts();
+        //             createPostForm.reset();
+        //         }
+        //     });
+
+        //     fetchPosts();
+
+        });
+    </script>
+</body>
+</html>
