@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>관리자화면</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container-md p-3 pt-5">
+      <div class="title mb-2 fs-5 fw-bold">게시판 글쓰기</div>
+      <div class="border p-4">
+        <div class="mb-3">
+          <label for="input-title" class="form-label fw-semibold">제목</label>
+          <input type="text" class="form-control" id="input-title" />
+        </div>
+        <div class="mb-3">
+          <label for="textarea-content" class="form-label fw-semibold"
+            >내용</label
+          >
+          <span class="form-text"> (300자 이내) </span>
+          <textarea
+            class="form-control"
+            id="textarea-content"
+            rows="10"
+          ></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="input-image1" class="form-label fw-semibold"
+            >PC 배너이미지</label
+          >
+          <span class="form-text"> (size:1400x484) </span>
+          <input
+            class="form-control form-control-sm"
+            type="file"
+            id="input-image1"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="input-image2" class="form-label fw-semibold"
+            >모바일 배너이미지</label
+          >
+          <span class="form-text"> (size:640x426) </span>
+          <input
+            class="form-control form-control-sm"
+            type="file"
+            id="input-image2"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="input-image3" class="form-label fw-semibold"
+            >멀티이미지</label
+          >
+          <input
+            class="form-control form-control-sm"
+            type="file"
+            id="input-image3"
+            multiple
+          />
+        </div>
+        <div class="mb-3">
+          <label for="input-link" class="form-label fw-semibold"
+            >비디오링크</label
+          >
+          <div class="row">
+            <div class="col-auto pe-0">
+              <select class="form-select" aria-label="Default select example">
+                <option value="youtube">유튜브</option>
+                <option value="vimeo">비메오</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <input class="form-control" type="text" id="input-link" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="button mt-4">
+        <div class="d-flex justify-content-end">
+          <button type="button" class="btn btn-primary">저장하기</button>
+          <button type="button" class="btn btn-outline-dark ms-2">취소</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
