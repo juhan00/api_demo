@@ -11,7 +11,7 @@
 
 
 $host = 'localhost';
-$dbname = 'apitest';
+$dbname = 'api_demo';
 $username = 'root';
 $password = 'limit1394@@';
 

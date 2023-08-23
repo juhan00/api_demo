@@ -15,6 +15,17 @@
     <div class="container-md p-3 pt-5">
       <div class="title mb-2 fs-5 fw-bold">게시판 글 수정하기</div>
       <div class="border p-4">
+        <div class="mb-3 row">
+          <label for="input-category" class="form-label fw-semibold"
+            >카테고리</label
+          >
+          <div class="col-auto">
+            <select class="form-select" aria-label="Default select">
+              <option value="category1">카테고리1</option>
+              <option value="category2">카테고리2</option>
+            </select>
+          </div>
+        </div>
         <div class="mb-3">
           <label for="input-title" class="form-label fw-semibold">제목</label>
           <input type="text" class="form-control" id="input-title" />
@@ -86,7 +97,7 @@
           >
           <div class="row">
             <div class="col-auto pe-0">
-              <select class="form-select" aria-label="Default select example">
+              <select class="form-select" aria-label="Default select">
                 <option value="youtube">유튜브</option>
                 <option value="vimeo">비메오</option>
               </select>
