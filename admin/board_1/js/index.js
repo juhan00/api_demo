@@ -1,22 +1,6 @@
 let category_data = []; // 전역 변수로 데이터 저장
 const board_name = "board_1";
 
-document.addEventListener("DOMContentLoaded", function () {
-  //카테고리 편집 버튼 클릭
-  const btn_category_edit = document.querySelector("#btn_category_edit");
-  const category_edit_list = document.querySelector("#category_edit_list");
-
-  btn_category_edit.addEventListener("click", (event) => {
-    if (category_edit_list.style.display === "none") {
-      category_edit_list.style.display = "block";
-      btn_category_edit.innerHTML = "카테고리 편집 닫기";
-    } else {
-      category_edit_list.style.display = "none";
-      btn_category_edit.innerHTML = "카테고리 편집";
-    }
-  });
-});
-
 //초기 셋팅
 prepare();
 
@@ -243,3 +227,26 @@ function generateCategoryID() {
     return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
   });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  //카테고리 편집 버튼 클릭
+  const btn_category_edit = document.querySelector("#btn_category_edit");
+  const category_edit_list = document.querySelector("#category_edit_list");
+
+  btn_category_edit.addEventListener("click", (event) => {
+    if (category_edit_list.style.display === "none") {
+      category_edit_list.style.display = "block";
+      btn_category_edit.innerHTML = "카테고리 편집 닫기";
+    } else {
+      category_edit_list.style.display = "none";
+      btn_category_edit.innerHTML = "카테고리 편집";
+    }
+  });
+
+  //글쓰기 버튼 클릭
+  const btn_board_write = document.querySelector("#btn_board_write");
+
+  btn_board_write.addEventListener("click", (event) => {
+    window.location.href = "./write.html";
+  });
+});
