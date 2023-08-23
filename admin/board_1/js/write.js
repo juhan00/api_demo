@@ -38,20 +38,41 @@ async function addBoardItem() {
     return;
   }
 
-  const image1_data = [];
+  // const image1_data = [];
 
-  if (image1.length > 0) {
-    for (let i = 0; i < image1.length; i++) {
-      const file = image1[i];
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        image1_data.push({
-          name: file.name,
-          size: file.size,
-          content: e.target.result.split(",")[1], // Base64 데이터
-        });
-      };
-      reader.readAsDataURL(file);
+  // if (image1.length > 0) {
+  //   for (let i = 0; i < image1.length; i++) {
+  //     const file = image1[i];
+  //     const reader = new FileReader();
+  //     reader.onload = function (e) {
+  //       image1_data.push({
+  //         name: file.name,
+  //         size: file.size,
+  //         content: e.target.result.split(",")[1], // Base64 데이터
+  //       });
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
+  const formData = new FormData();
+
+  formData.append("title", title);
+  formData.append("content", content);
+  formData.append("uuid", generateUUID());
+  formData.append("video_type", video_type);
+  formData.append("video_link", video_link);
+
+  if (image1) {
+    formData.append("image1", image1);
+  }
+
+  if (image2) {
+    formData.append("image2", image2);
+  }
+
+  if (multi_images) {
+    for (let i = 0; i < multi_images.length; i++) {
+      formData.append("multi_images[]", multi_images[i]);
     }
   }
 
@@ -61,19 +82,7 @@ async function addBoardItem() {
   try {
     const response = await fetch(`http://localhost/api_demo/api/board_1/`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title,
-        content: content,
-        uuid: generateUUID(),
-        image1_data: image1,
-        image2_data: image2,
-        multi_image_data: multi_images,
-        video_type: video_type,
-        video_link: video_link,
-      }),
+      body: formData,
     });
     if (response.ok) {
       const result = await response.text();

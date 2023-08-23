@@ -1,19 +1,23 @@
-let category_data = []; // 전역 변수로 데이터 저장
+let category_data,
+  board_list_data = []; // 전역 변수로 데이터 저장
 const board_name = "board_1";
 
 //초기 셋팅
 prepare();
 
 async function prepare() {
-  //게시판이름
-
-  category_data = await getCategoryListAPI(board_name);
+  //카테고리 가져오기
+  category_data = await getCategoryListAPI();
   renderCategoryTab(category_data);
   renderCategoryList(category_data);
+
+  //게시판 글 가져오기
+  board_list_data = await getBoardListAPI();
+  renderBoardList(board_list_data);
 }
 
 //카테고리 탭 가져오기
-async function getCategoryListAPI(board_name) {
+async function getCategoryListAPI() {
   try {
     const response = await fetch(
       `http://localhost/api_demo/api/category/?board_name=${board_name}`,
@@ -131,6 +135,31 @@ async function deleteCategory(target) {
   }
 }
 
+//게시판 리스트 가져오기
+async function getBoardListAPI() {
+  try {
+    const response = await fetch(
+      `http://localhost/api_demo/api/${board_name}/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      // console.log(result);
+      return result;
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 //카테고리탭 렌더링
 function renderCategoryTab(category_data) {
   const category_tab = document.querySelector("#category_tab");
@@ -186,29 +215,48 @@ function renderCategoryList(category_data) {
   category_edit_list.innerHTML = "";
   category_data.forEach(function (item) {
     const add_content = `
-    <tr class="border border-top-0 text-center" style="height: 60px">
-            <td class="col-auto text-start ps-4">
-              <input
-                type="text"
-                class="form-control"
-                size="7"
-                id="${item.category_id}"
-                value="${item.name}"
-              />
-            </td>
-            <td class="col-auto">
-              <div class="d-flex justify-content-end pe-3">
-                <button type="button" onclick="updateCategory(this);" class="btn btn-outline-dark me-1">
-                  수정
-                </button>
-                <button type="button" onclick="deleteCategory(this);" class="btn btn-outline-dark">
-                  삭제
-                </button>
-              </div>
-            </td>
-          </tr>
+      <tr class="border border-top-0 text-center" style="height: 60px">
+        <td class="col-auto text-start ps-4">
+          <input
+            type="text"
+            class="form-control"
+            size="7"
+            id="${item.category_id}"
+            value="${item.name}"
+          />
+        </td>
+        <td class="col-auto">
+          <div class="d-flex justify-content-end pe-3">
+            <button type="button" onclick="updateCategory(this);" class="btn btn-outline-dark me-1">
+              수정
+            </button>
+            <button type="button" onclick="deleteCategory(this);" class="btn btn-outline-dark">
+              삭제
+            </button>
+          </div>
+        </td>
+      </tr>
     `;
     category_edit_list.insertAdjacentHTML("beforeend", add_content);
+  });
+}
+
+//게시판 리스트 렌더링
+function renderBoardList(board_list_data) {
+  console.log(board_list_data);
+  const board_list = document.querySelector("#board_list tbody");
+  board_list.innerHTML = "";
+  board_list_data.forEach(function (item, index) {
+    const add_content = `
+      <tr class="border border-top-0 text-center" style="height: 60px">
+        <td class="col-1">${index + 1}</td>
+        <td class="col-9 text-start ps-4">
+          <a href="./edit.html?id=${item.id}">${item.title}</a>
+        </td>
+        <td class="col-1">${getDate(item.datetime)}</td>
+      </tr>
+    `;
+    board_list.insertAdjacentHTML("beforeend", add_content);
   });
 }
 
@@ -226,6 +274,20 @@ function generateCategoryID() {
     d = Math.floor(d / 16);
     return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
   });
+}
+
+function getDate(datetime) {
+  // Date 객체로 변환
+  const db_date = new Date(datetime);
+
+  // 날짜 정보만 추출
+  const year = db_date.getFullYear();
+  const month = db_date.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
+  const day = db_date.getDate();
+
+  // 날짜 정보를 원하는 형식으로 표시
+  const formatted_date = `${year}.${month}.${day}`;
+  return formatted_date;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
