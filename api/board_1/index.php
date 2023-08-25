@@ -10,13 +10,17 @@ switch ($method) {
         if(isset($_GET['id'])) {
             $id = $_GET['id'];
             getItem($id);
-        } else if (isset($_GET['category_uuid'])) {
-            // echo "여기?";
-            // exit;
-            getCategoryItems();
         } else {
-            getAllItems();
-        }
+            getCategoryItems();
+        } 
+        // else if (isset($_GET['category_uuid'])) {
+        //     // echo "여기?";
+        //     // exit;
+        //     getCategoryItems();
+        // } 
+        // else {
+        //     getAllItems();
+        // }
         break;
     case 'POST':  
         createItem();

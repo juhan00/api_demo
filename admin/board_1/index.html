@@ -10,7 +10,7 @@
       integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
       crossorigin="anonymous"
     />
-    <script src="./js/index.js"></script>
+    <script type="module" src="./js/index.js"></script>
   </head>
   <style>
     .container {
@@ -127,7 +127,6 @@
                     type="button"
                     id="btn_category_add"
                     class="btn btn-primary"
-                    onclick="addCategory(this)"
                   >
                     추가
                   </button>
@@ -179,12 +178,12 @@
       </table>
 
       <div class="button mt-4">
-        <div class="button w-100 text-center">
-          <button type="button" class="btn btn-primary">1</button>
+        <div id="paging_number" class="button w-100 text-center">
+          <!-- <button type="button" class="btn btn-primary">1</button>
           <button type="button" class="btn btn-light">2</button>
           <button type="button" class="btn btn-light">3</button>
           <button type="button" class="btn btn-light">4</button>
-          <button type="button" class="btn btn-light">5</button>
+          <button type="button" class="btn btn-light">5</button> -->
         </div>
         <div class="d-flex justify-content-between">
           <button type="button" class="btn btn-outline-dark">게시판목록</button>

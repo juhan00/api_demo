@@ -1,4 +1,6 @@
 <?php
+$db_table = "image_file";
+
 function getAllPosts() {
     global $db;
     $query = $db->query("SELECT * FROM posts");
@@ -13,14 +15,14 @@ function getAllPosts() {
     // echo json_encode($posts);
 }
 
-function getPost($id) {
-    global $db;
-    $query = $db->prepare("SELECT * FROM posts WHERE id = :id");
-    $query->bindParam(':id', $id);
+function getImages($board_uuid) {
+    global $db, $db_table;
+    $query = $db->prepare("SELECT * FROM $db_table WHERE board_uuid = :board_uuid");
+    $query->bindParam(':board_uuid', $board_uuid);
     $query->execute();
-    $post = $query->fetch(PDO::FETCH_ASSOC);
+    $datas = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($post);
+    echo json_encode($datas);
     // if ($post) {
     //     $post['comments'] = getComments($post['id']);
     //     echo json_encode($post);
@@ -42,7 +44,7 @@ function getPost($id) {
 // }
 
 function createImage() {
-    global $db;
+    global $db, $db_table;
     
     $upload_dir = '../../uploads/';
 
@@ -70,7 +72,7 @@ function createImage() {
             if (file_put_contents($destination, $file_content)) {
                 
                 //DB저장
-                $query = $db->prepare("INSERT INTO image_file (uuid, file_name, og_file_name, date) VALUES (:uuid, :file_name, :og_file_name, NOW())");
+                $query = $db->prepare("INSERT INTO $db_table (uuid, file_name, og_file_name, date) VALUES (:uuid, :file_name, :og_file_name, NOW())");
                 $query->bindParam(':uuid', $uuid);
                 $query->bindParam(':file_name', $new_file_name);
                 $query->bindParam(':og_file_name', $file_name);
@@ -91,12 +93,12 @@ function createImage() {
 
 
 function updatePost($id) {
-    global $db;
+    global $db, $db_table;
     $data = json_decode(file_get_contents('php://input'), true);
     $title = $data['title'];
     $content = $data['content'];
 
-    $query = $db->prepare("UPDATE posts SET title = :title, content = :content WHERE id = :id");
+    $query = $db->prepare("UPDATE $db_table SET title = :title, content = :content WHERE id = :id");
     $query->bindParam(':title', $title);
     $query->bindParam(':content', $content);
     $query->bindParam(':id', $id);
@@ -104,28 +106,10 @@ function updatePost($id) {
 }
 
 function deletePost($id) {
-    global $db;
-    $query = $db->prepare("DELETE FROM posts WHERE id = :id");
+    global $db, $db_table;
+    $query = $db->prepare("DELETE FROM $db_table WHERE id = :id");
     $query->bindParam(':id', $id);
     $query->execute();
 }
 
-function getComments($post_id) {
-    global $db;
-    $query = $db->prepare("SELECT * FROM comments WHERE post_id = :post_id");
-    $query->bindParam(':post_id', $post_id);
-    $query->execute();
-    return $query->fetchAll(PDO::FETCH_ASSOC);
-}
-
-function createComment($post_id) {
-    global $db;
-    $data = json_decode(file_get_contents('php://input'), true);
-    $content = $data['content'];
-
-    $query = $db->prepare("INSERT INTO comments (post_id, content) VALUES (:post_id, :content)");
-    $query->bindParam(':post_id', $post_id);
-    $query->bindParam(':content', $content);
-    $query->execute();
-}
 ?>

@@ -8,9 +8,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 // exit;
 switch ($method) {
     case 'GET':
-        if(isset($_GET['id'])) {
-            $id = intval($_GET['id']);
-            getPost($id);
+        if(isset($_GET['board_uuid'])) {
+            $board_uuid = $_GET['board_uuid'];
+            getImages($board_uuid);
         } else {
             // echo "여기?";
             // exit;
