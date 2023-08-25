@@ -1,6 +1,7 @@
 let category_data,
   board_list_data = []; // 전역 변수로 데이터 저장
 const board_name = "board_1";
+const per_page = 5;
 
 //초기 셋팅
 prepare();
@@ -11,9 +12,28 @@ async function prepare() {
   renderCategoryTab(category_data);
   renderCategoryList(category_data);
 
-  //게시판 글 가져오기
-  board_list_data = await getBoardListAPI();
-  renderBoardList(board_list_data);
+  // //게시판 글 가져오기
+  // board_list_data = await getBoardListAPI(1, 5);
+  // renderBoardList(board_list_data);
+  setBoardAllList(1);
+}
+
+async function setBoardAllList(page) {
+  try {
+    board_list_data = await getBoardListAPI(page, per_page);
+    renderBoardList(board_list_data);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+async function setBoardCategoryList(page, category_uuid) {
+  try {
+    board_list_data = await getBoardListAPI(page, per_page, category_uuid);
+    renderBoardList(board_list_data);
+  } catch (error) {
+    console.error("Error:", error);
+  }
 }
 
 //카테고리 탭 가져오기
@@ -44,14 +64,14 @@ async function getCategoryListAPI() {
 //카테고리 업데이트
 async function updateCategory(target) {
   const target_input = target.closest("tr").querySelector("input");
-  const target_input_category_id = target_input.id;
+  const target_input_category_uuid = target_input.id;
   const target_input_value = target_input.value;
 
-  console.log(target_input_category_id);
+  console.log(target_input_category_uuid);
 
   try {
     const response = await fetch(
-      `http://localhost/api_demo/api/category/?category_id=${target_input_category_id}`,
+      `http://localhost/api_demo/api/category/?category_uuid=${target_input_category_uuid}`,
       {
         method: "PUT",
         headers: {
@@ -79,7 +99,7 @@ async function updateCategory(target) {
 //카테고리 추가
 async function addCategory(target) {
   const target_input = target.closest("tr").querySelector("input");
-  const category_id = generateCategoryID();
+  const category_uuid = generateCategoryID();
   const target_input_value = target_input.value;
 
   if (target_input_value === "") {
@@ -96,7 +116,7 @@ async function addCategory(target) {
       body: JSON.stringify({
         name: target_input_value,
         board_name: board_name,
-        category_id: category_id,
+        category_uuid: category_uuid,
       }),
     });
     if (response.ok) {
@@ -113,11 +133,11 @@ async function addCategory(target) {
 //카테고리 삭제
 async function deleteCategory(target) {
   const target_input = target.closest("tr").querySelector("input");
-  const target_input_category_id = target_input.id;
+  const target_input_category_uuid = target_input.id;
 
   try {
     const response = await fetch(
-      `http://localhost/api_demo/api/category/?category_id=${target_input_category_id}`,
+      `http://localhost/api_demo/api/category/?category_uuid=${target_input_category_uuid}`,
       {
         method: "DELETE",
         headers: {
@@ -136,21 +156,26 @@ async function deleteCategory(target) {
 }
 
 //게시판 리스트 가져오기
-async function getBoardListAPI() {
+async function getBoardListAPI(page, per_page, category_uuid) {
+  let fetch_url = "";
+
+  if (category_uuid || category_uuid === null) {
+    fetch_url = `http://localhost/api_demo/api/${board_name}/?page=${page}&per_page=${per_page}&category_uuid=${category_uuid}`;
+  } else {
+    fetch_url = `http://localhost/api_demo/api/${board_name}/?page=${page}&per_page=${per_page}`;
+  }
+
   try {
-    const response = await fetch(
-      `http://localhost/api_demo/api/${board_name}/`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(fetch_url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (response.ok) {
       const result = await response.json();
-      // console.log(result);
+      console.log(result);
       return result;
     } else {
       throw new Error(`HTTP Error: ${response.status}`);
@@ -185,10 +210,10 @@ function renderCategoryTab(category_data) {
               type="radio"
               class="btn-check"
               name="btn_radio"
-              id="${item.category_id}"
+              id="${item.category_uuid}"
               autocomplete="off"
             />
-            <label class="btn btn-outline-primary" for="${item.category_id}">${item.name}</label>
+            <label class="btn btn-outline-primary" for="${item.category_uuid}">${item.name}</label>
       `;
     category_tab.insertAdjacentHTML("beforeend", add_content);
   });
@@ -198,10 +223,10 @@ function renderCategoryTab(category_data) {
               type="radio"
               class="btn-check"
               name="btn_radio"
-              id="category_tab_not"
+              id="category_tab_unset"
               autocomplete="off"
             />
-            <label class="btn btn-outline-primary" for="category_tab_not">미등록</label>
+            <label class="btn btn-outline-primary" for="category_tab_unset">미등록</label>
       `;
 
   category_tab.insertAdjacentHTML("beforeend", add_content_not);
@@ -221,7 +246,7 @@ function renderCategoryList(category_data) {
             type="text"
             class="form-control"
             size="7"
-            id="${item.category_id}"
+            id="${item.category_uuid}"
             value="${item.name}"
           />
         </td>
@@ -243,21 +268,22 @@ function renderCategoryList(category_data) {
 
 //게시판 리스트 렌더링
 function renderBoardList(board_list_data) {
-  console.log(board_list_data);
   const board_list = document.querySelector("#board_list tbody");
   board_list.innerHTML = "";
-  board_list_data.forEach(function (item, index) {
-    const add_content = `
-      <tr class="border border-top-0 text-center" style="height: 60px">
-        <td class="col-1">${index + 1}</td>
-        <td class="col-9 text-start ps-4">
-          <a href="./edit.html?id=${item.id}">${item.title}</a>
-        </td>
-        <td class="col-1">${getDate(item.datetime)}</td>
-      </tr>
-    `;
-    board_list.insertAdjacentHTML("beforeend", add_content);
-  });
+  if (board_list_data) {
+    board_list_data.forEach(function (item, index) {
+      const add_content = `
+        <tr class="border border-top-0 text-center" style="height: 60px">
+          <td class="col-1">${index + 1}</td>
+          <td class="col-9 text-start ps-4">
+            <a href="./edit.html?id=${item.id}">${item.title}</a>
+          </td>
+          <td class="col-1">${getDate(item.datetime)}</td>
+        </tr>
+      `;
+      board_list.insertAdjacentHTML("beforeend", add_content);
+    });
+  }
 }
 
 //category id 생성
@@ -310,5 +336,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   btn_board_write.addEventListener("click", (event) => {
     window.location.href = "./write.html";
+  });
+
+  //카테고리 탭 클릭
+  const category_tab = document.querySelector("#category_tab");
+
+  category_tab.addEventListener("click", (event) => {
+    if (event.target.tagName === "INPUT") {
+      const category_uuid = event.target.getAttribute("id");
+
+      if (category_uuid === "category_tab_all") {
+        //전체 클릭 시
+        setBoardAllList(1);
+      } else if (category_uuid === "category_tab_unset") {
+        //미등록 클릭 시
+        setBoardCategoryList(1, null);
+      } else {
+        //카테고리 클릭 시
+        setBoardCategoryList(1, category_uuid);
+      }
+      // console.log(event.target.getAttribute("id"));
+    }
   });
 });

@@ -1,21 +1,94 @@
 <?php
 $db_board = "board_1";
-function getAllItems() {
-    global $db, $db_board;
-    $query = $db->query('SELECT * FROM '. $db_board);
-    $items = $query->fetchAll(PDO::FETCH_ASSOC);
+// function getAllItems() {
+//     global $db, $db_board;
+//     $query = $db->query('SELECT * FROM '. $db_board);
+//     $items = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($items);
-}
+//     echo json_encode($items);
+// }
 
 function getItem($id) {
     global $db, $db_board;
     $query = $db->prepare('SELECT * FROM '. $db_board .' WHERE id = :id');
     $query->bindParam(':id', $id);
     $query->execute();
-    $post = $query->fetch(PDO::FETCH_ASSOC);
+    $data = $query->fetch(PDO::FETCH_ASSOC);
 
-    echo json_encode($post);
+    echo json_encode($data);
+}
+
+function getAllItems() {
+    global $db, $db_board;
+    
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $per_page = isset($_GET['per_page']) ? $_GET['per_page'] : 10;
+
+ 
+
+    // 시작 레코드 위치 계산
+    $start = ($page - 1) * $per_page;
+
+    // 게시물 조회 쿼리 생성
+    $query = "SELECT * FROM $db_board LIMIT $start, $per_page";
+
+    // 쿼리 실행 및 결과 가져오기
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    $datas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($datas);
+}
+
+function getCategoryItems() {
+    global $db, $db_board;
+
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $per_page = isset($_GET['per_page']) ? $_GET['per_page'] : 10;
+    $category_uuid = isset($_GET['category_uuid']) ? $_GET['category_uuid'] : null;
+
+    // 시작 레코드 위치 계산
+    $start = ($page - 1) * $per_page;
+
+    // 게시물 조회 쿼리 생성
+    $query = 'SELECT * FROM '. $db_board;
+
+  
+    // 카테고리 UUID가 주어진 경우에만 WHERE 절 추가
+    if ($category_uuid !== null && $category_uuid !== 'null') {
+        $query .= " WHERE category_uuid = :category_uuid";
+    } else {
+        // category_uuid가 unset인 경우 category_uuid 가져오기
+        $category_uuids_query = "SELECT category_uuid FROM category";
+        $category_uuids_stmt = $db->prepare($category_uuids_query);
+        $category_uuids_stmt->execute();
+        $category_uuids = $category_uuids_stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+        // category_uuid들을 제외한 데이터 조회
+        if (!empty($category_uuids)) {
+            
+            $category_uuids_str = implode("','", $category_uuids);
+            // print_r($category_uuids_str);
+            // exit;
+            $query .= " WHERE category_uuid NOT IN ('$category_uuids_str') OR category_uuid IS NULL";
+        }
+    }
+
+    $query .= " LIMIT $start, $per_page";
+
+    // 쿼리 실행 및 결과 가져오기
+    $stmt = $db->prepare($query);
+
+
+    // 카테고리 UUID가 주어진 경우에만 바인딩
+    if ($category_uuid !== null && $category_uuid !== 'null') {
+        $stmt->bindValue(':category_uuid', $category_uuid);
+    }
+
+    $stmt->execute();
+    $datas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($datas);
 }
 
 function createItem() {
@@ -29,6 +102,7 @@ function createItem() {
 
     try {
         // 게시글 데이터
+        $category_uuid = isset($_POST['category_uuid']) ? $_POST['category_uuid'] : '';
         $title = isset($_POST['title']) ? $_POST['title'] : '';
         $content = isset($_POST['content']) ? $_POST['content'] : '';
         $uuid = isset($_POST['uuid']) ? $_POST['uuid'] : '';
@@ -100,7 +174,8 @@ function createItem() {
         }
 
         //DB저장
-        $query = $db->prepare('INSERT INTO ' . $db_board . ' (title, content, uuid, datetime, video_type, video_link) VALUES (:title, :content, :uuid, NOW(), :video_type, :video_link)');
+        $query = $db->prepare("INSERT INTO $db_board (category_uuid, title, content, uuid, datetime, video_type, video_link) VALUES (:category_uuid, :title, :content, :uuid, NOW(), :video_type, :video_link)");
+        $query->bindParam(':category_uuid', $category_uuid);
         $query->bindParam(':title', $title);
         $query->bindParam(':content', $content);
         $query->bindParam(':uuid', $uuid);
@@ -117,8 +192,8 @@ function createItem() {
 
 function insertImageQuery($db, $uuid, $new_file_name, $file_name, $file_use_type) {
     //image DB저장
-    $query = $db->prepare('INSERT INTO image_file (uuid, file_name, og_file_name, datetime, file_use_type) VALUES (:uuid, :file_name, :og_file_name, NOW(), :file_use_type)');
-    $query->bindParam(':uuid', $uuid);
+    $query = $db->prepare("INSERT INTO image_file (board_uuid, file_name, og_file_name, datetime, file_use_type) VALUES (:uuid, :file_name, :og_file_name, NOW(), :file_use_type)");
+    $query->bindParam(':board_uuid', $uuid);
     $query->bindParam(':file_name', $new_file_name);
     $query->bindParam(':og_file_name', $file_name);
     $query->bindParam(':file_use_type', $file_use_type);
@@ -133,7 +208,7 @@ function updateItem($id) {
     $title = $data['title'];
     $content = $data['content'];
 
-    $query = $db->prepare('UPDATE board_1 SET title = :title, content = :content WHERE id = :id');
+    $query = $db->prepare("UPDATE board_1 SET title = :title, content = :content WHERE id = :id");
     $query->bindParam(':title', $title);
     $query->bindParam(':content', $content);
     $query->bindParam(':id', $id);
@@ -142,7 +217,7 @@ function updateItem($id) {
 
 function deleteItem($id) {
     global $db, $db_board;
-    $query = $db->prepare('DELETE FROM board_1 WHERE id = :id');
+    $query = $db->prepare("DELETE FROM board_1 WHERE id = :id");
     $query->bindParam(':id', $id);
     $query->execute();
 }

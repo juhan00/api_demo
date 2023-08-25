@@ -4,11 +4,16 @@ require 'functions.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+
 switch ($method) {
     case 'GET':
         if(isset($_GET['id'])) {
-            $id = intval($_GET['id']);
+            $id = $_GET['id'];
             getItem($id);
+        } else if (isset($_GET['category_uuid'])) {
+            // echo "여기?";
+            // exit;
+            getCategoryItems();
         } else {
             getAllItems();
         }

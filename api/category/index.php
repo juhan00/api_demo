@@ -16,17 +16,15 @@ switch ($method) {
         createCategory();
         break;
     case 'PUT':
-        // echo "여기까지?";
-        // exit;
-        if($_GET['category_id']) {
-            $category_id = $_GET['category_id'];
-            updateCategory($category_id);
+        if($_GET['category_uuid']) {
+            $category_uuid = $_GET['category_uuid'];
+            updateCategory($category_uuid);
         }
         break;
     case 'DELETE':
-        if($_GET['category_id']) {
-            $category_id = $_GET['category_id'];
-            deleteCategory($category_id);
+        if($_GET['category_uuid']) {
+            $category_uuid = $_GET['category_uuid'];
+            deleteCategory($category_uuid);
         }
         break;
     default:
