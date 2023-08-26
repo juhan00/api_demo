@@ -151,52 +151,46 @@ function updateImage() {
     }
 }
 
-function deleteImages() {
+function deleteImages($board_uuid, $file_use_type) {
     global $db, $db_table;
     
     try {
-        $data = json_decode(file_get_contents('php://input'), true);
-        $board_uuid = $data['board_uuid']; 
-        $file_use_type = $data['file_use_type'];
-
         // 이미지 정보를 조회
         $query = $db->prepare("SELECT * FROM $db_table WHERE board_uuid = :board_uuid AND file_use_type = :file_use_type");
         $query->bindParam(':board_uuid', $board_uuid);
         $query->bindParam(':file_use_type', $file_use_type);
         $query->execute();
-        $image_info = $query->fetch(PDO::FETCH_ASSOC);
+        $image_info_list = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($image_info) {
+        foreach ($image_info_list as $image_info) {
+            $file_name = $image_info['file_name'];
+            
             // 이미지 파일 삭제
             $upload_dir = '../../uploads/';
-            $file_path = $upload_dir . $image_info['file_name'];
+            $file_path = $upload_dir . $file_name;
 
             if (unlink($file_path)) {
                 // 이미지 정보 삭제
-                $delete_query = $db->prepare("DELETE FROM $db_table WHERE board_uuid = :board_uuid AND file_use_type = :file_use_type");
+                $delete_query = $db->prepare("DELETE FROM $db_table WHERE board_uuid = :board_uuid AND file_name = :file_name");
                 $delete_query->bindParam(':board_uuid', $board_uuid);
-                $delete_query->bindParam(':file_use_type', $file_use_type);
+                $delete_query->bindParam(':file_name', $file_name);
                 $delete_query->execute();
 
                 echo "파일 및 이미지 정보 삭제 완료\n";
             } else {
                 echo "파일 삭제 실패\n";
             }
-        } else {
-            echo "해당 이미지 정보가 없음\n";
         }
-    }catch (Exception $e) {
-        echo "deleteImage 에러";
+    } catch (Exception $e) {
+        echo "deleteImages 에러";
     }
 }
 
-function deleteAllImages() {
+function deleteAllImages($board_uuid) {
     global $db, $db_table;
     
     try {
-        $data = json_decode(file_get_contents('php://input'), true);
-        $board_uuid = $data['board_uuid']; 
-        
+
         // 이미지 정보를 조회
         $query = $db->prepare("SELECT * FROM $db_table WHERE board_uuid = :board_uuid");
         $query->bindParam(':board_uuid', $board_uuid);

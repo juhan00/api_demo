@@ -81,8 +81,8 @@ async function setBoardData(board_item_data) {
   );
   const input_image1_box = document.querySelector("#input_image1_box");
   const input_image2_box = document.querySelector("#input_image2_box");
-  const input_multi_image_box = document.querySelector(
-    "#input_multi_image_box"
+  const input_multi_images_box = document.querySelector(
+    "#input_multi_images_box"
   );
 
   //타이틀 추가
@@ -112,7 +112,7 @@ async function setBoardData(board_item_data) {
       dataKey: FILE_USE_TYPE.multi,
       deleteCheckbox: delete_multi_image_check_box,
       imageView: multi_images_view,
-      inputBox: input_multi_image_box,
+      inputBox: input_multi_images_box,
     },
   ];
 
@@ -175,7 +175,8 @@ async function updateBoardItem(board_uuid) {
     //신규 이미지 추가
     const input_image1 = document.getElementById("input_image1");
     if (input_image1.files.length > 0) {
-      await addImageFilesAPI(board_uuid, input_image1, FILE_USE_TYPE.image1);
+      console.log("여기?");
+      await addImageFile(board_uuid, input_image1, FILE_USE_TYPE.image1);
     }
 
     //image2 체크
@@ -188,7 +189,7 @@ async function updateBoardItem(board_uuid) {
     //신규 이미지 추가
     const input_image2 = document.getElementById("input_image2");
     if (input_image2.files.length > 0) {
-      await addImageFilesAPI(board_uuid, input_image2, FILE_USE_TYPE.image2);
+      await addImageFile(board_uuid, input_image2, FILE_USE_TYPE.image2);
     }
 
     //multi image 체크
@@ -202,12 +203,8 @@ async function updateBoardItem(board_uuid) {
     }
     //신규 이미지 추가
     const input_multi_images = document.getElementById("input_multi_images");
-    if (input_image2.files.length > 0) {
-      await addImageFilesAPI(
-        board_uuid,
-        input_multi_images,
-        FILE_USE_TYPE.multi
-      );
+    if (input_multi_images.files.length > 0) {
+      await addImageFile(board_uuid, input_multi_images, FILE_USE_TYPE.multi);
     }
 
     //게시글 업데이트
@@ -217,6 +214,33 @@ async function updateBoardItem(board_uuid) {
     window.location.href = "./index.html";
   } catch (error) {
     console.error("Error:", error);
+  }
+}
+
+//이미지 파일 추가
+async function addImageFile(board_uuid, file_input, file_use_type) {
+  const files = file_input.files;
+
+  if (files.length > 0) {
+    const file_data = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        file_data.push({
+          name: file.name,
+          size: file.size,
+          content: e.target.result.split(",")[1], // Base64 데이터
+        });
+
+        if (file_data.length === files.length) {
+          //이미지 파일 추가 API
+          await addImageFilesAPI(board_uuid, file_data, file_use_type);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }
 
@@ -252,15 +276,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const delete_multi_image_check = document.querySelector(
     "#delete_multi_image_check"
   );
-  const input_multi_image_box = document.querySelector(
-    "#input_multi_image_box"
+  const input_multi_images_box = document.querySelector(
+    "#input_multi_images_box"
   );
   const input_multi_image = document.querySelector("#input_multi_image");
   delete_multi_image_check.addEventListener("click", (event) => {
     if (delete_multi_image_check.checked) {
-      input_multi_image_box.style.display = "block";
+      input_multi_images_box.style.display = "block";
     } else {
-      input_multi_image_box.style.display = "none";
+      input_multi_images_box.style.display = "none";
       input_multi_image.value = "";
     }
   });

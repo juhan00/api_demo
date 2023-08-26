@@ -227,16 +227,15 @@ async function addImageFilesAPI(board_uuid, file_data, file_use_type) {
 //유형별 이미지파일 삭제
 async function deleteTypeImageFilesAPI(board_uuid, file_use_type) {
   try {
-    const response = await fetch(`http://localhost/api_demo/api/image/`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        board_uuid: board_uuid,
-        file_use_type: file_use_type,
-      }),
-    });
+    const response = await fetch(
+      `http://localhost/api_demo/api/image/?board_uuid=${board_uuid}&file_use_type=${file_use_type}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     if (response.ok) {
     } else {
       throw new Error(`HTTP Error: ${response.status}`);

@@ -24,10 +24,12 @@ switch ($method) {
         updateImage();
         break;
     case 'DELETE':
-        if(isset($_POST['file_use_type'])) {
-            deleteImages();
+        $board_uuid = $_GET['board_uuid'];
+        $file_use_type = $_GET['file_use_type'];
+        if(isset($file_use_type)) {       
+            deleteImages($board_uuid, $file_use_type);
         }else{
-            deleteAllImages();
+            deleteAllImages($board_uuid);
         }
         break;
     default:
