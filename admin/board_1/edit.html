@@ -57,7 +57,7 @@
             <div class="col-auto ps-0">번으로 순서변경</div>
           </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
           <label for="textarea_content" class="form-label fw-semibold"
             >내용</label
           >
@@ -68,38 +68,113 @@
             rows="10"
           ></textarea>
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
           <label for="input_image1" class="form-label fw-semibold"
             >PC 배너이미지</label
           >
           <span class="form-text"> (size:1400x484) </span>
-          <input
-            class="form-control form-control-sm"
-            type="file"
-            id="input_image1"
-          />
+          <div id="delete_image1_check_box" class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="delete_image1_check"
+            />
+            <label
+              class="form-check-label text-secondary"
+              for="delete_image1_check"
+            >
+              등록된 PC 이미지를 삭제
+            </label>
+          </div>
+          <div
+            id="image1_view"
+            class="d-flex align-items-center mb-2"
+            style="height: 100px"
+          >
+            <!-- 이미지 영역 -->
+          </div>
+          <!-- 이미지1 파일등록 -->
+          <div id="input_image1_box" class="mt-3" style="display: none">
+            <span>등록할 이미지</span>
+            <input
+              class="form-control form-control-sm mt-2"
+              type="file"
+              id="input_image1"
+            />
+          </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-4 pt-2 border-top">
           <label for="input_image2" class="form-label fw-semibold"
             >모바일 배너이미지</label
           >
           <span class="form-text"> (size:640x426) </span>
-          <input
-            class="form-control form-control-sm"
-            type="file"
-            id="input_image2"
-          />
+          <div id="delete_image2_check_box" class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="delete_image2_check"
+            />
+            <label
+              class="form-check-label text-secondary"
+              for="delete_image2_check"
+            >
+              등록된 모바일 이미지를 삭제
+            </label>
+          </div>
+          <div
+            id="image2_view"
+            class="d-flex align-items-center mb-2"
+            style="height: 100px"
+          >
+            <!-- 이미지 영역 -->
+          </div>
+          <!-- 이미지1 파일등록 -->
+          <div id="input_image2_box" class="mt-3" style="display: none">
+            <span>등록할 이미지</span>
+            <input
+              class="form-control form-control-sm mt-2"
+              type="file"
+              id="input_image2"
+            />
+          </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-4 pt-2 border-top">
           <label for="input_image3" class="form-label fw-semibold"
             >멀티이미지</label
           >
-          <input
-            class="form-control form-control-sm"
-            type="file"
-            id="input_image3"
-            multiple
-          />
+          <div id="delete_multi_image_check_box" class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="delete_multi_image_check"
+            />
+            <label
+              class="form-check-label text-secondary"
+              for="delete_multi_image_check"
+            >
+              등록된 멀티 이미지를 삭제
+            </label>
+          </div>
+          <div
+            id="multi_images_view"
+            class="d-flex align-items-center mb-2"
+            style="height: 100px"
+          >
+            <!-- 이미지 영역 -->
+          </div>
+          <!-- 이미지1 파일등록 -->
+          <div id="input_multi_image_box" class="mt-3" style="display: none">
+            <span>등록할 이미지</span>
+            <input
+              class="form-control form-control-sm mt-2"
+              type="file"
+              id="input_multi_image"
+              multiple
+            />
+          </div>
         </div>
         <div class="mb-3">
           <label for="input_link" class="form-label fw-semibold"
@@ -107,13 +182,17 @@
           >
           <div class="row">
             <div class="col-auto pe-0">
-              <select class="form-select" aria-label="Default select">
+              <select
+                id="select_video_type"
+                class="form-select"
+                aria-label="Default select"
+              >
                 <option value="youtube">유튜브</option>
                 <option value="vimeo">비메오</option>
               </select>
             </div>
             <div class="col-6">
-              <input class="form-control" type="text" id="input_link" />
+              <input class="form-control" type="text" id="input_video_link" />
             </div>
           </div>
         </div>
@@ -121,8 +200,16 @@
 
       <div class="button mt-4">
         <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-primary">저장하기</button>
-          <button type="button" class="btn btn-outline-dark ms-2">취소</button>
+          <button type="button" id="btn_update" class="btn btn-primary">
+            수정하기
+          </button>
+          <button
+            type="button"
+            id="btn_cancel"
+            class="btn btn-outline-dark ms-2"
+          >
+            취소
+          </button>
         </div>
       </div>
     </div>

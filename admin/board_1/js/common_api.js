@@ -40,15 +40,6 @@ async function updateCategoryAPI(category_uuid, name) {
         }),
       }
     );
-    if (response.ok) {
-      prepare();
-      // const updated_category_data = await getCategoryListAPI(board_name);
-      // renderCategoryTab(updated_category_data);
-      // const result = await response.json();
-      // return result;
-    } else {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
   } catch (error) {
     console.error("Error:", error);
   }
@@ -125,14 +116,23 @@ async function getBoardListAPI(page, per_page, category_uuid) {
 }
 
 //게시판 글 추가
-async function addBoardItemAPI(formData) {
-  console.log(formData.get("image1"));
+async function addBoardItemAPI(board_data) {
   try {
     const response = await fetch(
       `http://localhost/api_demo/api/${BOARD_NAME}/`,
       {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          category_uuid: board_data.category_uuid,
+          title: board_data.title,
+          content: board_data.content,
+          uuid: board_data.uuid,
+          video_type: board_data.video_type,
+          video_link: board_data.video_link,
+        }),
       }
     );
 
@@ -142,6 +142,31 @@ async function addBoardItemAPI(formData) {
     } else {
       throw new Error(`HTTP Error: ${response.status}`);
     }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+//게시판 글 업데이트
+async function updateBoardItemAPI(board_data) {
+  try {
+    const response = await fetch(
+      `http://localhost/api_demo/api/${BOARD_NAME}/`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          category_uuid: board_data.category_uuid,
+          title: board_data.title,
+          content: board_data.content,
+          uuid: board_data.uuid,
+          video_type: board_data.video_type,
+          video_link: board_data.video_link,
+        }),
+      }
+    );
   } catch (error) {
     console.error("Error:", error);
   }
@@ -172,8 +197,57 @@ async function getBoardItemAPI(id) {
   }
 }
 
-//이미지 가져오기
-async function getImageItemsAPI(board_uuid) {
+//이미지파일 추가
+async function addImageFilesAPI(board_uuid, file_data, file_use_type) {
+  console.log(board_uuid, file_data, file_use_type);
+  try {
+    const response = await fetch("http://localhost/api_demo/api/image/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        board_uuid: board_uuid,
+        file_data: file_data,
+        file_use_type: file_use_type,
+      }),
+    });
+
+    if (response.ok) {
+      // const result = await response.text();
+      // console.log(result);
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+//유형별 이미지파일 삭제
+async function deleteTypeImageFilesAPI(board_uuid, file_use_type) {
+  try {
+    const response = await fetch(`http://localhost/api_demo/api/image/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        board_uuid: board_uuid,
+        file_use_type: file_use_type,
+      }),
+    });
+    if (response.ok) {
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+//이미지파일 가져오기
+async function getImageFilesAPI(board_uuid) {
   try {
     const response = await fetch(
       `http://localhost/api_demo/api/image/?board_uuid=${board_uuid}`,
@@ -204,6 +278,9 @@ export {
   deleteCategoryAPI,
   getBoardListAPI,
   addBoardItemAPI,
+  updateBoardItemAPI,
   getBoardItemAPI,
-  getImageItemsAPI,
+  getImageFilesAPI,
+  deleteTypeImageFilesAPI,
+  addImageFilesAPI,
 };

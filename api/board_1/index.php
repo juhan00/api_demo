@@ -26,10 +26,7 @@ switch ($method) {
         createItem();
         break;
     case 'PUT':
-        if(isset($_GET['id'])) {
-            $id = intval($_GET['id']);
-            updateItem($id);
-        }
+        updateItem();
         break;
     case 'DELETE':
         if(isset($_GET['id'])) {

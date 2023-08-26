@@ -60,4 +60,18 @@ function getParameterFromURL(parameterName) {
   return params[parameterName];
 }
 
-export { getDate, generateCategoryID, generateUUID, getParameterFromURL };
+// key 기준으로 객체들을 그룹화하는 함수
+function getGroupByData(arr, key) {
+  return arr.reduce((result, obj) => {
+    (result[obj[key]] = result[obj[key]] || []).push(obj);
+    return result;
+  }, {});
+}
+
+export {
+  getDate,
+  generateCategoryID,
+  generateUUID,
+  getParameterFromURL,
+  getGroupByData,
+};

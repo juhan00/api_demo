@@ -213,6 +213,7 @@ function renderPagingNumber(page, per_page, total_count) {
   }
 }
 
+//페이지 로드 후
 document.addEventListener("DOMContentLoaded", function () {
   //카테고리 편집 버튼 클릭
   const btn_category_edit = document.querySelector("#btn_category_edit");

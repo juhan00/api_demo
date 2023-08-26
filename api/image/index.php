@@ -21,15 +21,13 @@ switch ($method) {
         createImage();
         break;
     case 'PUT':
-        if(isset($_GET['id'])) {
-            $id = intval($_GET['id']);
-            updatePost($id);
-        }
+        updateImage();
         break;
     case 'DELETE':
-        if(isset($_GET['id'])) {
-            $id = intval($_GET['id']);
-            deletePost($id);
+        if(isset($_POST['file_use_type'])) {
+            deleteImages();
+        }else{
+            deleteAllImages();
         }
         break;
     default:

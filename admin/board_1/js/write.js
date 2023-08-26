@@ -1,6 +1,10 @@
-import { getCategoryListAPI, addBoardItemAPI } from "./common_api.js";
+import {
+  getCategoryListAPI,
+  addBoardItemAPI,
+  addImageFilesAPI,
+} from "./common_api.js";
 import { generateUUID, generateCategoryID } from "./common_utility.js";
-import { BOARD_NAME, PER_PAGE } from "./common_params.js";
+import { FILE_USE_TYPE, PER_PAGE } from "./common_params.js";
 
 //초기 셋팅
 prepare();
@@ -16,45 +20,72 @@ async function addBoardItem() {
   const category_uuid = document.querySelector("#select_category").value;
   const title = document.querySelector("#input_title").value;
   const content = document.querySelector("#textarea_content").value;
-  const image1 = document.querySelector("#input_image1").files[0];
-  const image2 = document.querySelector("#input_image2").files[0];
-  const multi_images = document.querySelector("#input_multi_images").files;
   const video_type = document.querySelector("#select_video_type").value;
   const video_link = document.querySelector("#input_video_link").value;
+  const uuid = generateUUID();
 
-  if (input_title.value === "") {
-    alert("제목을 입력해주세요.");
-    return;
+  const board_data = {
+    category_uuid: category_uuid,
+    title: title,
+    content: content,
+    uuid: uuid,
+    video_type: video_type,
+    video_link: video_link,
+  };
+
+  try {
+    //이미지 추가
+    const input_image1 = document.getElementById("input_image1");
+    const input_image2 = document.getElementById("input_image2");
+    const input_multi_images = document.getElementById("input_multi_images");
+
+    if (input_image1.files.length > 0) {
+      await addImageFile(uuid, input_image1, FILE_USE_TYPE.image1);
+    }
+
+    if (input_image2.files.length > 0) {
+      await addImageFile(uuid, input_image2, FILE_USE_TYPE.image2);
+    }
+
+    if (input_multi_images.files.length > 0) {
+      await addImageFile(uuid, input_multi_images, FILE_USE_TYPE.multi);
+    }
+
+    //게시글 추가
+    await addBoardItemAPI(board_data);
+
+    alert("저장되었습니다.");
+    window.location.href = "./index.html";
+  } catch (error) {
+    console.error("Error:", error);
   }
+}
 
-  const formData = new FormData();
+//이미지 파일 추가
+async function addImageFile(board_uuid, file_input, file_use_type) {
+  const files = file_input.files;
 
-  formData.append("category_uuid", category_uuid);
-  formData.append("title", title);
-  formData.append("content", content);
-  formData.append("uuid", generateUUID());
-  formData.append("video_type", video_type);
-  formData.append("video_link", video_link);
+  if (files.length > 0) {
+    const file_data = [];
 
-  if (image1) {
-    formData.append("image1", image1);
-  }
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        file_data.push({
+          name: file.name,
+          size: file.size,
+          content: e.target.result.split(",")[1], // Base64 데이터
+        });
 
-  if (image2) {
-    formData.append("image2", image2);
-  }
-
-  if (multi_images) {
-    for (let i = 0; i < multi_images.length; i++) {
-      formData.append("multi_images[]", multi_images[i]);
+        if (file_data.length === files.length) {
+          //이미지 파일 추가 API
+          await addImageFilesAPI(board_uuid, file_data, file_use_type);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   }
-
-  //게시글 추가
-  await addBoardItemAPI(formData);
-
-  alert("저장되었습니다.");
-  window.location.href = "./index.html";
 }
 
 //카테고리 드롭박스 렌더링
@@ -70,6 +101,7 @@ function renderCategorySelect(category_data) {
   });
 }
 
+//페이지 로드 후
 document.addEventListener("DOMContentLoaded", function () {
   //취소 버튼 클릭
   const btn_cancel = document.querySelector("#btn_cancel");
