@@ -137,8 +137,7 @@ async function addBoardItemAPI(board_data) {
     );
 
     if (response.ok) {
-      const result = await response.text();
-      return result;
+      alert("저장되었습니다.");
     } else {
       throw new Error(`HTTP Error: ${response.status}`);
     }
@@ -167,6 +166,33 @@ async function updateBoardItemAPI(board_data) {
         }),
       }
     );
+    if (response.ok) {
+      alert("수정되었습니다.");
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+//게시판 글 삭제
+async function deleteBoardItemAPI(board_uuid) {
+  try {
+    const response = await fetch(
+      `http://localhost/api_demo/api/${BOARD_NAME}/?board_uuid=${board_uuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      alert("삭제되었습니다.");
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
   } catch (error) {
     console.error("Error:", error);
   }
@@ -245,6 +271,27 @@ async function deleteTypeImageFilesAPI(board_uuid, file_use_type) {
   }
 }
 
+//전체 이미지파일 삭제
+async function deleteAllImageFilesAPI(board_uuid) {
+  try {
+    const response = await fetch(
+      `http://localhost/api_demo/api/image/?board_uuid=${board_uuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 //이미지파일 가져오기
 async function getImageFilesAPI(board_uuid) {
   try {
@@ -278,8 +325,10 @@ export {
   getBoardListAPI,
   addBoardItemAPI,
   updateBoardItemAPI,
+  deleteBoardItemAPI,
   getBoardItemAPI,
   getImageFilesAPI,
   deleteTypeImageFilesAPI,
+  deleteAllImageFilesAPI,
   addImageFilesAPI,
 };

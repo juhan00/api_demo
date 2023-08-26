@@ -13,14 +13,6 @@ switch ($method) {
         } else {
             getCategoryItems();
         } 
-        // else if (isset($_GET['category_uuid'])) {
-        //     // echo "여기?";
-        //     // exit;
-        //     getCategoryItems();
-        // } 
-        // else {
-        //     getAllItems();
-        // }
         break;
     case 'POST':  
         createItem();
@@ -29,9 +21,9 @@ switch ($method) {
         updateItem();
         break;
     case 'DELETE':
-        if(isset($_GET['id'])) {
-            $id = intval($_GET['id']);
-            deleteItem($id);
+        if(isset($_GET['board_uuid'])) {
+            $board_uuid = $_GET['board_uuid'];
+            deleteItem($board_uuid);
         }
         break;
     default:

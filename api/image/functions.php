@@ -190,33 +190,36 @@ function deleteAllImages($board_uuid) {
     global $db, $db_table;
     
     try {
-
         // 이미지 정보를 조회
         $query = $db->prepare("SELECT * FROM $db_table WHERE board_uuid = :board_uuid");
         $query->bindParam(':board_uuid', $board_uuid);
         $query->execute();
-        $image_info = $query->fetch(PDO::FETCH_ASSOC);
+        $image_info = $query->fetchAll(PDO::FETCH_ASSOC);
 
         if ($image_info) {
-            // 이미지 파일 삭제
             $upload_dir = '../../uploads/';
-            $file_path = $upload_dir . $image_info['file_name'];
-
-            if (unlink($file_path)) {
-                // 이미지 정보 삭제
-                $delete_query = $db->prepare("DELETE FROM $db_table WHERE board_uuid = :board_uuid");
-                $delete_query->bindParam(':board_uuid', $board_uuid);
-                $delete_query->execute();
-
-                echo "파일 및 이미지 정보 삭제 완료\n";
-            } else {
-                echo "파일 삭제 실패\n";
+            
+            foreach ($image_info as $image) {
+                $file_path = $upload_dir . $image['file_name'];
+                
+                if (unlink($file_path)) {
+                    echo "파일 삭제 성공: $file_path\n";
+                } else {
+                    echo "파일 삭제 실패: $file_path\n";
+                }
             }
+            
+            // 이미지 정보 삭제
+            $delete_query = $db->prepare("DELETE FROM $db_table WHERE board_uuid = :board_uuid");
+            $delete_query->bindParam(':board_uuid', $board_uuid);
+            $delete_query->execute();
+
+            echo "이미지 정보 삭제 완료\n";
         } else {
             echo "해당 이미지 정보가 없음\n";
         }
-    }catch (Exception $e) {
-        echo "deleteImage 에러";
+    } catch (Exception $e) {
+        echo "deleteAllImages 에러\n";
     }
 }
 

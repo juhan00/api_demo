@@ -5,6 +5,8 @@ import {
   deleteTypeImageFilesAPI,
   updateBoardItemAPI,
   addImageFilesAPI,
+  deleteBoardItemAPI,
+  deleteAllImageFilesAPI,
 } from "./common_api.js";
 import { getParameterFromURL, getGroupByData } from "./common_utility.js";
 import { FILE_USE_TYPE, PER_PAGE } from "./common_params.js";
@@ -66,7 +68,7 @@ async function setBoardData(board_item_data) {
   const image1_view = document.querySelector("#image1_view");
   const image2_view = document.querySelector("#image2_view");
   const multi_images_view = document.querySelector("#multi_images_view");
-  // const video_type = document.querySelector("#select_video_type");
+  const video_type = document.querySelector("#select_video_type");
   const video_link = document.querySelector("#input_video_link");
   const board_uuid = board_item_data.uuid;
 
@@ -142,7 +144,14 @@ async function setBoardData(board_item_data) {
       config.inputBox.style.display = "block";
     }
   });
-
+  //비디오 유형 추가
+  const video_type_options = video_type.options;
+  for (let i = 0; i < video_type_options.length; i++) {
+    if (video_type_options[i].value === board_item_data.video_type) {
+      video_type_options[i].selected = true;
+      break;
+    }
+  }
   //비디오 링크 추가
   video_link.value = board_item_data.video_link;
 }
@@ -153,8 +162,6 @@ async function updateBoardItem(board_uuid) {
   const content = document.querySelector("#textarea_content").value;
   const video_type = document.querySelector("#select_video_type").value;
   const video_link = document.querySelector("#input_video_link").value;
-  // const uuid = ;
-
   const board_data = {
     category_uuid: category_uuid,
     title: title,
@@ -210,7 +217,6 @@ async function updateBoardItem(board_uuid) {
     //게시글 업데이트
     await updateBoardItemAPI(board_data);
 
-    alert("수정되었습니다.");
     window.location.href = "./index.html";
   } catch (error) {
     console.error("Error:", error);
@@ -300,4 +306,22 @@ document.addEventListener("DOMContentLoaded", function () {
   btn_update.addEventListener("click", (event) => {
     updateBoardItem(board_uuid);
   });
+
+  //삭제 버튼 클릭
+  const btn_delete = document.querySelector("#btn_delete");
+  btn_delete.addEventListener("click", (event) => {
+    if (confirm("삭제하시겠습니까?") === true) {
+      deleteBoardItem(board_uuid);
+    } else {
+      return false;
+    }
+  });
+
+  async function deleteBoardItem(board_uuid) {
+    //게시판 글 삭제
+    await deleteBoardItemAPI(board_uuid);
+    await deleteAllImageFilesAPI(board_uuid);
+
+    window.location.href = "./index.html";
+  }
 });

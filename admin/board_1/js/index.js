@@ -160,7 +160,11 @@ function renderCategoryList(category_data) {
   const btn_category_delete = document.querySelectorAll("#btn_category_delete");
   btn_category_delete.forEach((button) => {
     button.addEventListener("click", (event) => {
-      deleteCategory(event.target);
+      if (confirm("삭제하시겠습니까?") === true) {
+        deleteCategory(event.target);
+      } else {
+        return false;
+      }
     });
   });
 }
@@ -266,11 +270,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const btn_paging_number = document.querySelector("#paging_number");
 
   btn_paging_number.addEventListener("click", (event) => {
-    const clicked_page = event.target.getAttribute("id");
-    const category_tab = document.querySelector(
-      "#category_tab > input:checked"
-    );
-    const category_uuid = category_tab.getAttribute("id");
-    setBoardCategoryList(clicked_page, PER_PAGE, category_uuid);
+    if (event.target.tagName === "BUTTON") {
+      const clicked_page = event.target.getAttribute("id");
+      const category_tab = document.querySelector(
+        "#category_tab > input:checked"
+      );
+      const category_uuid = category_tab.getAttribute("id");
+      setBoardCategoryList(clicked_page, PER_PAGE, category_uuid);
+    }
   });
 });

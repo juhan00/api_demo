@@ -151,9 +151,9 @@ function updateItem() {
     }
 }
 
-function deleteItem($id) {
+function deleteItem($board_uuid) {
     global $db, $db_table;
-    $query = $db->prepare("DELETE FROM board_1 WHERE id = :id");
-    $query->bindParam(':id', $id);
+    $query = $db->prepare("DELETE FROM $db_table WHERE uuid = :board_uuid");
+    $query->bindParam(':board_uuid', $board_uuid);
     $query->execute();
 }

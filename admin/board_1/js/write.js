@@ -54,7 +54,6 @@ async function addBoardItem() {
     //게시글 추가
     await addBoardItemAPI(board_data);
 
-    alert("저장되었습니다.");
     window.location.href = "./index.html";
   } catch (error) {
     console.error("Error:", error);
