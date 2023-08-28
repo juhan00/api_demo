@@ -112,7 +112,7 @@ async function setBoardData(board_item_data) {
     },
     {
       dataKey: FILE_USE_TYPE.multi,
-      deleteCheckbox: delete_multi_image_check_box,
+      deleteCheckbox: delete_multi_check_box,
       imageView: multi_images_view,
       inputBox: input_multi_images_box,
     },
@@ -172,51 +172,42 @@ async function updateBoardItem(board_uuid) {
   };
 
   try {
-    //image1 체크
-    const delete_image1_check = document.querySelector("#delete_image1_check");
-    //이미지 삭제 체크 시
-    if (delete_image1_check.checked) {
-      //이미지 삭제
-      await deleteTypeImageFilesAPI(board_uuid, FILE_USE_TYPE.image1);
-    }
-    //신규 이미지 추가
-    const input_image1 = document.getElementById("input_image1");
-    if (input_image1.files.length > 0) {
-      console.log("여기?");
-      await addImageFile(board_uuid, input_image1, FILE_USE_TYPE.image1);
-    }
-
-    //image2 체크
-    const delete_image2_check = document.querySelector("#delete_image2_check");
-    //이미지 삭제 체크 시
-    if (delete_image2_check.checked) {
-      //이미지 삭제
-      await deleteTypeImageFilesAPI(board_uuid, FILE_USE_TYPE.image2);
-    }
-    //신규 이미지 추가
-    const input_image2 = document.getElementById("input_image2");
-    if (input_image2.files.length > 0) {
-      await addImageFile(board_uuid, input_image2, FILE_USE_TYPE.image2);
+    async function processImageType(board_uuid, input_element, file_use_type) {
+      const delete_check = document.querySelector(
+        `#delete_${file_use_type}_check`
+      );
+      // 이미지 삭제 체크 시
+      if (delete_check.checked) {
+        // 이미지 삭제
+        await deleteTypeImageFilesAPI(board_uuid, file_use_type);
+      }
+      // 신규 이미지 추가
+      if (input_element.files.length > 0) {
+        await addImageFile(board_uuid, input_element, file_use_type);
+      }
     }
 
-    //multi image 체크
-    const delete_multi_image_check = document.querySelector(
-      "#delete_multi_image_check"
-    );
-    //이미지 삭제 체크 시
-    if (delete_multi_image_check.checked) {
-      //이미지 삭제
-      await deleteTypeImageFilesAPI(board_uuid, FILE_USE_TYPE.multi);
-    }
-    //신규 이미지 추가
-    const input_multi_images = document.getElementById("input_multi_images");
-    if (input_multi_images.files.length > 0) {
-      await addImageFile(board_uuid, input_multi_images, FILE_USE_TYPE.multi);
+    // 이미지 유형에 대한 배열
+    const image_types = [
+      { key: "image1", input_id: "input_image1" },
+      { key: "image2", input_id: "input_image2" },
+      { key: "multi", input_id: "input_multi_images" },
+    ];
+
+    // 각 이미지 유형 처리
+    for (const type of image_types) {
+      const input_element = document.getElementById(type.input_id);
+      await processImageType(
+        board_uuid,
+        input_element,
+        FILE_USE_TYPE[type.key]
+      );
     }
 
-    //게시글 업데이트
+    // 게시글 업데이트
     await updateBoardItemAPI(board_data);
 
+    // 페이지 이동
     window.location.href = "./index.html";
   } catch (error) {
     console.error("Error:", error);
@@ -256,6 +247,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const delete_image1_check = document.querySelector("#delete_image1_check");
   const input_image1_box = document.querySelector("#input_image1_box");
   const input_image1 = document.querySelector("#input_image1");
+
   delete_image1_check.addEventListener("click", (event) => {
     if (delete_image1_check.checked) {
       input_image1_box.style.display = "block";
@@ -280,11 +272,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //multi image 삭제 체크박스
   const delete_multi_image_check = document.querySelector(
-    "#delete_multi_image_check"
+    "#delete_multi_check"
   );
-  const input_multi_images_box = document.querySelector(
-    "#input_multi_images_box"
-  );
+  const input_multi_images_box = document.querySelector("#input_multi_box");
   const input_multi_image = document.querySelector("#input_multi_image");
   delete_multi_image_check.addEventListener("click", (event) => {
     if (delete_multi_image_check.checked) {
