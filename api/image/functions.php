@@ -7,12 +7,6 @@ function getAllPosts() {
     $posts = $query->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($posts);
-    // exit;
-    // foreach ($posts as &$post) {
-    //     $post['comments'] = getComments($post['id']);
-    // }
-
-    // echo json_encode($posts);
 }
 
 function getImages($board_uuid) {
@@ -23,25 +17,7 @@ function getImages($board_uuid) {
     $datas = $query->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($datas);
-    // if ($post) {
-    //     $post['comments'] = getComments($post['id']);
-    //     echo json_encode($post);
-    // } else {
-    //     http_response_code(404); // Not Found
-    // }
 }
-
-// function createPost() {
-//     global $db;
-   
-//     $data = json_decode(file_get_contents('php://input'), true);
-//     $title = $data['title'];
-//     $content = $data['content'];
-//     $query = $db->prepare('INSERT INTO posts (title, content) VALUES (:title, :content)');
-//     $query->bindParam(':title', $title);
-//     $query->bindParam(':content', $content);
-//     $query->execute();
-// }
 
 function createImage() {
     global $db, $db_table;
