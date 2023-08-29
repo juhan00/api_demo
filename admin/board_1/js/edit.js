@@ -189,9 +189,9 @@ async function updateBoardItem(board_uuid) {
 
     // 이미지 유형에 대한 배열
     const image_types = [
-      { key: "image1", input_id: "input_image1" },
-      { key: "image2", input_id: "input_image2" },
-      { key: "multi", input_id: "input_multi_images" },
+      { key: FILE_USE_TYPE.image1, input_id: "input_image1" },
+      { key: FILE_USE_TYPE.image2, input_id: "input_image2" },
+      { key: FILE_USE_TYPE.multi, input_id: "input_multi_images" },
     ];
 
     // 각 이미지 유형 처리
