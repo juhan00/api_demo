@@ -3,7 +3,7 @@ import {
   addBoardItemAPI,
   addImageFilesAPI,
 } from "./common_api.js";
-import { generateUUID, generateCategoryID } from "./common_utility.js";
+import { generateUUID, generateCategoryID } from "../../../utility/utility.js";
 import { FILE_USE_TYPE, PER_PAGE } from "./common_params.js";
 
 //초기 셋팅

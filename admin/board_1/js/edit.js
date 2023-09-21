@@ -8,7 +8,10 @@ import {
   deleteBoardItemAPI,
   deleteAllImageFilesAPI,
 } from "./common_api.js";
-import { getParameterFromURL, getGroupByData } from "./common_utility.js";
+import {
+  getParameterFromURL,
+  getGroupByData,
+} from "../../../utility/utility.js";
 import { FILE_USE_TYPE, PER_PAGE } from "./common_params.js";
 
 //초기 셋팅

@@ -31,15 +31,20 @@ switch ($method) {
             $mail->setFrom('jvabya@gmail.com', '플랜디브'); // 발신자 이메일 주소 및 이름
             $mail->addAddress('jvabya@gmail.com', '플랜디브'); // 수신자 이메일 주소 및 이름
     
+
+            $data = json_decode(file_get_contents('php://input'), true);
+            $title = $data['title'];
+            $content = $data['content'];
+            $phone = $data['phone'];
+            $email = $data['email'];
+
             // 이메일 본문
             $mail->isHTML(true); // HTML 형식으로 이메일을 보낼 경우 true로 설정
-            $mail->Subject = '프로젝트 문의: ' . $_POST['name'];
-            $mail->Body    = "<h1>프로젝트 문의</h1>
-                            <p><strong>프로젝트:</strong> {$_POST['project']}</p>
-                            <p><strong>이름:</strong> {$_POST['name']}</p>
-                            <p><strong>전화번호:</strong> {$_POST['phone']}</p>
-                            <p><strong>이메일:</strong> {$_POST['email']}</p>
-                            <p><strong>개인정보 수집 및 이용동의:</strong> {$_POST['agreement']}</p>";
+            $mail->Subject = '프로젝트 문의: ' . $title;
+            $mail->Body = "<h1>프로젝트 문의</h1>"
+                        . "<p><strong>내용:</strong> " . $content . "</p>"
+                        . "<p><strong>연락처:</strong> " . $phone . "</p>"
+                        . "<p><strong>이메일:</strong> " . $email . "</p>";
     
             // 메일 보내기
             $mail->send();

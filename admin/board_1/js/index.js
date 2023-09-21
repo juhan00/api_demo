@@ -5,7 +5,7 @@ import {
   addCategoryAPI,
   deleteCategoryAPI,
 } from "./common_api.js";
-import { getDate, generateCategoryID } from "./common_utility.js";
+import { getDate, generateCategoryID } from "../../../utility/utility.js";
 import { BOARD_NAME, PER_PAGE } from "./common_params.js";
 
 //초기 셋팅
