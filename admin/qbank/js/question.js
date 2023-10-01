@@ -15,6 +15,7 @@ import {
 } from "./common_params.js";
 import {
   generateUUID,
+  deepEqual,
   getDate,
   generateCategoryID,
   renderPagingNumber,
@@ -25,6 +26,7 @@ prepare();
 let current_question_num = 0;
 let current_group_uuid = "";
 let questions_count = 0;
+let initial_question_data = [];
 let question_data = [];
 let question_mode = QUESTION_MODE.create;
 // // items 프로퍼티가 없을 때 추가
@@ -73,6 +75,9 @@ async function prepare() {
         }
       })
     );
+
+    initial_question_data = JSON.parse(JSON.stringify(question_data));
+    console.log("default_question_data", initial_question_data);
   }
 
   current_group_uuid = group_uuid;
@@ -117,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
       renderItems(0);
       selectedItem(0);
     } else {
-      // renderItems(default_items_count);
+      renderItems(default_items_count);
       selectedItem(default_items_count);
     }
   });
@@ -138,17 +143,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //저장하기 버튼 클릭
   btn_question_save.addEventListener("click", async (event) => {
-    saveQuestionData();
-    createQuestionAndItem(question_data);
-    console.log("저장");
+    if (confirm("저장 하시겠습니까?") === true) {
+      saveQuestionData();
+      await createQuestionAndItem(question_data);
+      console.log("저장");
+    } else {
+      return false;
+    }
   });
 
   //업데이트 버튼 클릭
   btn_question_update.addEventListener("click", async (event) => {
     saveQuestionData();
-    // console.log(question_data);
-    updateQuestionAndItem(question_data);
-    console.log("업데이트");
+    if (!deepEqual(initial_question_data, question_data)) {
+      if (confirm("업데이트 하시겠습니까?") === true) {
+        await updateQuestionAndItem(question_data);
+        console.log("업데이트");
+        window.location.href = "./group.html";
+      } else {
+        return false;
+      }
+      console.log("deepEqual", deepEqual(initial_question_data, question_data));
+    } else {
+      alert("변경사항이 없습니다.");
+    }
   });
 });
 
@@ -251,7 +269,11 @@ function setButton() {
       btn_question_update.style.display = "block";
     }
   } else {
-    btn_question_prev.style.display = "block";
+    if (current_question_num > 0) {
+      btn_question_prev.style.display = "block";
+    } else {
+      btn_question_prev.style.display = "none";
+    }
     btn_question_next.style.display = "block";
     btn_question_save.style.display = "none";
     btn_question_update.style.display = "none";
@@ -264,32 +286,31 @@ function setQuestionData() {
   const multiple_selection = document.querySelector("#multiple_selection");
   const subjective = document.querySelector("#subjective");
 
-  if (question_data[current_question_num]) {
+  const current_question_data = question_data[current_question_num];
+  const current_question_data_item_length = current_question_data.items.length;
+  if (current_question_data) {
     //질문 내용
-    question_title.value = question_data[current_question_num].question_title;
+    question_title.value = current_question_data.question_title;
     //답변 개수
-    items_count.value = question_data[current_question_num].items_count;
+    items_count.value = current_question_data.items_count;
 
-    if (
-      question_data[current_question_num].multiple_selection ===
-      MULTIPLE_SELECTION.true
-    ) {
+    if (current_question_data.multiple_selection === MULTIPLE_SELECTION.true) {
       multiple_selection.checked = true;
     } else {
       multiple_selection.checked = false;
     }
 
-    if (question_data[current_question_num].subjective === SUBJECTIVE.true) {
+    if (current_question_data.subjective === SUBJECTIVE.true) {
       subjective.checked = true;
     } else {
       subjective.checked = false;
     }
 
-    const items_count_data = question_data[current_question_num].items_count;
+    const items_count_data = current_question_data.items_count;
     renderItems(items_count_data);
 
-    if (question_data[current_question_num].items.length) {
-      for (let i = 0; i < items_count_data; i++) {
+    if (current_question_data_item_length) {
+      for (let i = 0; i < current_question_data_item_length; i++) {
         const item_title = document.querySelector(`#item_title_${i + 1}`);
         const item_key = document.querySelector(`#item_key_${i + 1}`);
 
@@ -386,7 +407,7 @@ function saveQuestionData() {
     question_uuid: current_question_uuid,
     group_uuid: current_group_uuid,
     question_title: question_title_value,
-    items_count: items_count_value,
+    items_count: String(items_count_value),
     multiple_selection: multiple_selection_value,
     subjective: subjective_value,
     items: item_values,
@@ -394,6 +415,7 @@ function saveQuestionData() {
 
   if (current_question) {
     new_data.id = current_question.id;
+    new_data.datetime = current_question.datetime;
   }
 
   for (let i = 0; i < items_count_value; i++) {
