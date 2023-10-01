@@ -93,6 +93,51 @@ function handleButtonClick(button, callback, is_button_clicked = false) {
   });
 }
 
+function renderPagingNumber(page, per_page, total_count) {
+  const paging_number = document.querySelector("#paging_number");
+  const total_pages = Math.ceil(total_count / per_page);
+
+  const pages_per_group = 5; // 한 그룹당 페이지 수
+  const current_group = Math.ceil(page / pages_per_group); // 현재 페이지가 속한 그룹
+
+  paging_number.innerHTML = "";
+
+  const start_page = (current_group - 1) * pages_per_group + 1;
+  const end_page = Math.min(current_group * pages_per_group, total_pages);
+
+  // 이전 그룹 버튼 추가
+  if (current_group > 1) {
+    const prev_group_page = (current_group - 2) * pages_per_group + 1;
+    const prev_group_button = `
+      <button type="button" id="${prev_group_page}" class="btn btn-light">&lt;</button>
+    `;
+    paging_number.insertAdjacentHTML("beforeend", prev_group_button);
+  }
+
+  for (let i = start_page; i <= end_page; i++) {
+    if (i === page) {
+      const add_content = `
+        <button type="button" id="${i}" class="btn btn-primary">${i}</button>
+      `;
+      paging_number.insertAdjacentHTML("beforeend", add_content);
+    } else {
+      const add_content = `
+        <button type="button" id="${i}" class="btn btn-light">${i}</button>
+      `;
+      paging_number.insertAdjacentHTML("beforeend", add_content);
+    }
+  }
+
+  // 다음 그룹 버튼 추가
+  if (current_group * pages_per_group < total_pages) {
+    const next_group_page = current_group * pages_per_group + 1;
+    const next_group_button = `
+      <button type="button" id="${next_group_page}" class="btn btn-light">&gt;</button>
+    `;
+    paging_number.insertAdjacentHTML("beforeend", next_group_button);
+  }
+}
+
 export {
   getDate,
   generateCategoryID,
@@ -100,4 +145,5 @@ export {
   getParameterFromURL,
   getGroupByData,
   handleButtonClick,
+  renderPagingNumber,
 };

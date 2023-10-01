@@ -1,4 +1,4 @@
-import { BOARD_NAME, PER_PAGE } from "./common_params.js";
+import { BOARD_NAME } from "./common_params.js";
 
 //카테고리 탭 가져오기
 async function getCategoryListAPI() {
