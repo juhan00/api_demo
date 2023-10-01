@@ -181,37 +181,6 @@ async function createQuestionAndItem(question_data) {
   }
 }
 
-// //question_data 서버에 저장하기
-// async function updateQuestionAndItem(question_data) {
-//   try {
-//     await updateQuestionData(question_data);
-//     // 리디렉션 코드
-//     // window.location.href = "./group.html";
-//   } catch (error) {
-//     console.error("데이터 추가 중 오류 발생:", error);
-//     // 오류 처리 코드 추가
-//   }
-
-//   //질문 데이터 & 답변 데이터 추가
-//   async function updateDataToAPI(data) {
-//     await updateQuestionDataAPI(data);
-
-//     await deleteItemDataAPI(data.question_uuid);
-//     if (Array.isArray(data.items)) {
-//       for (const item of data.items) {
-//         await addItemDataAPI(item);
-//       }
-//     }
-//   }
-
-//   //질문 별 함수 호출
-//   async function updateQuestionData(question_data) {
-//     console.log("data.question_uuid", question_data);
-//     for (const data of question_data) {
-//       await updateDataToAPI(data);
-//     }
-//   }
-// }
 //question_data 서버에 저장하기
 async function updateQuestionAndItem(question_data) {
   try {
@@ -226,14 +195,11 @@ async function updateQuestionAndItem(question_data) {
   //질문 데이터 & 답변 데이터 추가
   async function updateDataToAPI(data) {
     await updateQuestionDataAPI(data);
+
+    await deleteItemDataAPI(data.question_uuid);
     if (Array.isArray(data.items)) {
       for (const item of data.items) {
-        console.log("item.id", item.id);
-        if (item.id) {
-          await updateItemDataAPI(item);
-        } else {
-          await addItemDataAPI(item);
-        }
+        await addItemDataAPI(item);
       }
     }
   }
