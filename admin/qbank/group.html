@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,38 +49,39 @@
           </div>
         </div>
 
+        <div class="button mt-4">
+          <div class="d-flex justify-content-end">
+            <button type="button" id="btn_group_save" class="btn btn-primary">
+              만들기
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="title mb-2 mt-5 fs-5 fw-bold">질문 그룹 리스트</div>
+
+      <table class="w-100" id="group_list">
+        <thead>
+          <tr
+            class="bg-light border fw-semibold text-center"
+            style="height: 40px"
+          >
+            <td class="col-1">No</td>
+            <td class="col-7">제목</td>
+            <td class="col-2">날짜</td>
+            <td class="col-2"></td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 리스트 영역 -->
+        </tbody>
+      </table>
+
       <div class="button mt-4">
-        <div class="d-flex justify-content-end">
-          <button type="button" id="btn_group_save" class="btn btn-primary">
-            만들기
-          </button>
+        <div id="paging_number" class="button w-100 text-center">
+          <!-- 페이징 영역 -->
         </div>
       </div>
     </div>
-
-    <div class="title mb-2 mt-5 fs-5 fw-bold">질문 그룹 리스트</div>
-
-    <table class="w-100" id="group_list">
-      <thead>
-        <tr
-          class="bg-light border fw-semibold text-center"
-          style="height: 40px"
-        >
-          <td class="col-1">No</td>
-          <td class="col-9">제목</td>
-          <td class="col-2">날짜</td>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 리스트 영역 -->
-      </tbody>
-    </table>
-
-    <div class="button mt-4">
-      <div id="paging_number" class="button w-100 text-center">
-        <!-- 페이징 영역 -->
-      </div>
-    </div>
-
   </body>
 </html>

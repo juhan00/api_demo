@@ -1,9 +1,8 @@
-import { getGroupListAPI, addGroupAPI } from "./common_api.js";
+import { getGroupListAPI, addGroupAPI, deleteQbankAPI } from "./common_api.js";
 import { PER_PAGE } from "./common_params.js";
 import {
   generateUUID,
   getDate,
-  generateCategoryID,
   renderPagingNumber,
 } from "../../../utility/utility.js";
 
@@ -51,21 +50,38 @@ function renderGroupList(group_list_data) {
       const add_content = `
         <tr class="border border-top-0 text-center" style="height: 60px">
           <td class="col-1">${(page - 1) * per_page + (index + 1)}</td>
-          <td class="col-9 text-start ps-4">
-            <a href="./question.html?group_uuid=${item.group_uuid}">${
-        item.group_title
-      }</a>
+          <td class="col-7 text-start ps-4">
+            <a href="./question.html?group_uuid=${item.group_uuid}" id="${
+        item.group_uuid
+      }">${item.group_title}</a>
           </td>
-          <td class="col-1">${getDate(item.datetime)}</td>
+          <td class="col-2">${getDate(item.datetime)}</td>
+          <td class="col-2">
+          <button type="button" id="btn_group_delete" class="btn btn-outline-dark">
+            삭제
+          </button>
+          </td>
         </tr>
       `;
       board_list.insertAdjacentHTML("beforeend", add_content);
+    });
+
+    // 카테고리 삭제 버튼
+    const btn_group_delete = document.querySelectorAll("#btn_group_delete");
+    btn_group_delete.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        if (confirm("삭제하시겠습니까?") === true) {
+          deleteQbank(event.target);
+        } else {
+          return false;
+        }
+      });
     });
   }
   renderPagingNumber(page, per_page, total_count);
 }
 
-//게시판 글 추가
+//질문 그룹 추가
 async function addGroup() {
   const group_title = document.querySelector("#group_title").value;
   const questions_count = document.querySelector("#questions_count").value;
@@ -84,4 +100,13 @@ async function addGroup() {
 
   await addGroupAPI(board_data);
   window.location.href = "./group.html";
+}
+
+//질문 그룹 삭제
+async function deleteQbank(target) {
+  const target_group = target.closest("tr").querySelector("a");
+  const target_group_uuid = target_group.id;
+
+  await deleteQbankAPI(target_group_uuid);
+  prepare();
 }

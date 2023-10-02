@@ -1,6 +1,7 @@
 const QBANK_GROUP_NAME = "qbank/qbank_group";
 const QBANK_QUESTION_NAME = "qbank/qbank_question";
 const QBANK_ITEM_NAME = "qbank/qbank_item";
+const QBANK_DELETE_NAME = "qbank/qbank_delete";
 const PER_PAGE = 10;
 const MULTIPLE_SELECTION = {
   true: "1",
@@ -20,6 +21,7 @@ export {
   QBANK_GROUP_NAME,
   QBANK_QUESTION_NAME,
   QBANK_ITEM_NAME,
+  QBANK_DELETE_NAME,
   PER_PAGE,
   MULTIPLE_SELECTION,
   SUBJECTIVE,

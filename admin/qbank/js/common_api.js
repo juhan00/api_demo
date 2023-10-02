@@ -2,6 +2,7 @@ import {
   QBANK_GROUP_NAME,
   QBANK_QUESTION_NAME,
   QBANK_ITEM_NAME,
+  QBANK_DELETE_NAME,
 } from "./common_params.js";
 
 //그룹 가져오기
@@ -223,6 +224,27 @@ async function deleteItemDataAPI(question_uuid) {
   }
 }
 
+//그룹 및 관련 데이터 삭제
+async function deleteQbankAPI(group_uuid) {
+  try {
+    const response = await fetch(
+      `../../api/${QBANK_DELETE_NAME}/?group_uuid=${group_uuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 export {
   getGroupAPI,
   getGroupListAPI,
@@ -234,4 +256,5 @@ export {
   deleteItemDataAPI,
   getItemDataAPI,
   updateItemDataAPI,
+  deleteQbankAPI,
 };
