@@ -20,7 +20,11 @@ document.addEventListener("DOMContentLoaded", function () {
   //만들기 버튼 클릭
   const btn_group_save = document.querySelector("#btn_group_save");
   btn_group_save.addEventListener("click", (event) => {
-    addGroup();
+    if (confirm("질문 그룹을 만들겠습니까?") === true) {
+      addGroup();
+    } else {
+      return false;
+    }
   });
 });
 
@@ -66,6 +70,11 @@ async function addGroup() {
   const group_title = document.querySelector("#group_title").value;
   const questions_count = document.querySelector("#questions_count").value;
   const group_uuid = generateUUID();
+
+  if (group_title === "") {
+    alert("질문 그룹명을 입력해주세요.");
+    return;
+  }
 
   const board_data = {
     group_uuid: group_uuid,

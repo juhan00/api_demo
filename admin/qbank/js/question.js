@@ -90,6 +90,7 @@ async function prepare() {
 
 //페이지 로드 후
 document.addEventListener("DOMContentLoaded", function () {
+  const btn_go_group = document.querySelector("#btn_go_group");
   const btn_question_next = document.querySelector("#btn_question_next");
   const btn_question_prev = document.querySelector("#btn_question_prev");
   const btn_question_save = document.querySelector("#btn_question_save");
@@ -127,8 +128,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  //목록보기 버튼 클릭
+  btn_go_group.addEventListener("click", (event) => {
+    window.location.href = "./group.html";
+  });
+
   //다음 버튼 클릭
   btn_question_next.addEventListener("click", (event) => {
+    //항목 체크
+    const check_value = checkValueQuestionData();
+    if (check_value === false) {
+      return;
+    }
+
     saveQuestionData();
     setQuestion("next");
     // console.log(question_data);
@@ -136,15 +148,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //이전 버튼 클릭
   btn_question_prev.addEventListener("click", (event) => {
+    //항목 체크
+    const check_value = checkValueQuestionData();
+    if (check_value === false) {
+      return;
+    }
+
     saveQuestionData();
     setQuestion("prev");
     // console.log(question_data);
   });
 
-  //저장하기 버튼 클릭
+  //만들기 버튼 클릭
   btn_question_save.addEventListener("click", async (event) => {
-    if (confirm("저장 하시겠습니까?") === true) {
-      saveQuestionData();
+    //항목 체크
+    const check_value = checkValueQuestionData();
+    if (check_value === false) {
+      return;
+    }
+
+    saveQuestionData();
+
+    if (confirm("질문을 생성 하시겠습니까?") === true) {
       await createQuestionAndItem(question_data);
       console.log("저장");
     } else {
@@ -286,9 +311,11 @@ function setQuestionData() {
   const multiple_selection = document.querySelector("#multiple_selection");
   const subjective = document.querySelector("#subjective");
 
-  const current_question_data = question_data[current_question_num];
-  const current_question_data_item_length = current_question_data.items.length;
-  if (current_question_data) {
+  if (question_data.length > 0) {
+    const current_question_data = question_data[current_question_num];
+    const current_question_data_item_length =
+      current_question_data.items.length;
+
     //질문 내용
     question_title.value = current_question_data.question_title;
     //답변 개수
@@ -314,10 +341,6 @@ function setQuestionData() {
         const item_title = document.querySelector(`#item_title_${i + 1}`);
         const item_key = document.querySelector(`#item_key_${i + 1}`);
 
-        // console.log(
-        //   "aaa",
-        //   question_data[current_question_num].items[i].item_title
-        // );
         item_title.value =
           question_data[current_question_num].items[i].item_title;
         item_key.value = question_data[current_question_num].items[i].item_key;
@@ -376,6 +399,29 @@ function subjectiveChange(option) {
     subjective.checked = true;
   } else {
     subjective.checked = false;
+  }
+}
+
+function checkValueQuestionData() {
+  const question_title = document.querySelector("#question_title");
+  const items_count = document.querySelector("#items_count");
+  if (question_title.value === "") {
+    alert("질문 내용을 입력해주세요.");
+    return false;
+  }
+  for (let i = 0; i < Number(items_count.value); i++) {
+    const item_title = document.querySelector(`#item_title_${i + 1}`);
+    const item_key = document.querySelector(`#item_key_${i + 1}`);
+
+    if (item_title.value === "") {
+      alert(`답변${i + 1} 내용을 입력해주세요.`);
+      return false;
+    }
+
+    if (item_key.value === "") {
+      alert(`답변${i + 1} KEY를 입력해주세요.`);
+      return false;
+    }
   }
 }
 
