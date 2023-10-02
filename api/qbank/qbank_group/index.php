@@ -1,5 +1,5 @@
 <?php
-require '../config.php';
+require '../../config.php';
 require 'functions.php';
 
 $method = $_SERVER['REQUEST_METHOD'];

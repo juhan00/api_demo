@@ -1,6 +1,6 @@
-const QBANK_GROUP_NAME = "qbank_group";
-const QBANK_QUESTION_NAME = "qbank_question";
-const QBANK_ITEM_NAME = "qbank_item";
+const QBANK_GROUP_NAME = "qbank/qbank_group";
+const QBANK_QUESTION_NAME = "qbank/qbank_question";
+const QBANK_ITEM_NAME = "qbank/qbank_item";
 const PER_PAGE = 10;
 const MULTIPLE_SELECTION = {
   true: "1",
