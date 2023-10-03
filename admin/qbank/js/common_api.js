@@ -3,6 +3,7 @@ import {
   QBANK_QUESTION_NAME,
   QBANK_ITEM_NAME,
   QBANK_DELETE_NAME,
+  QBANK_ANSWER_NAME,
 } from "./common_params.js";
 
 //그룹 가져오기
@@ -140,7 +141,7 @@ async function getQuestionDataAPI(group_uuid) {
   }
 }
 
-//답변 추가
+//답변 항목 추가
 async function addItemDataAPI(item) {
   try {
     const response = await fetch(`../../api/${QBANK_ITEM_NAME}/`, {
@@ -160,7 +161,7 @@ async function addItemDataAPI(item) {
   }
 }
 
-//답변 업데이트
+//답변 항목 업데이트
 async function updateItemDataAPI(item) {
   try {
     const response = await fetch(`../../api/${QBANK_ITEM_NAME}/`, {
@@ -179,7 +180,7 @@ async function updateItemDataAPI(item) {
   }
 }
 
-//답변 데이터 가져오기
+//답변 항목 데이터 가져오기
 async function getItemDataAPI(question_uuid) {
   const fetch_url = `../../api/${QBANK_ITEM_NAME}/?question_uuid=${question_uuid}`;
 
@@ -203,7 +204,7 @@ async function getItemDataAPI(question_uuid) {
   }
 }
 
-//답변 데이터 삭제
+//답변 항목 데이터 삭제
 async function deleteItemDataAPI(question_uuid) {
   try {
     const response = await fetch(
@@ -245,6 +246,28 @@ async function deleteQbankAPI(group_uuid) {
   }
 }
 
+//답변 추가
+async function addAnswerDataAPI(item) {
+  try {
+    const response = await fetch(`../../api/${QBANK_ANSWER_NAME}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        answer_uuid: item.answer_uuid,
+        group_uuid: item.group_uuid,
+        question_uuid: item.question_uuid,
+        question_title: item.question_title,
+        answer: item.answer,
+        answer_key: item.answer_key,
+      }),
+    });
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 export {
   getGroupAPI,
   getGroupListAPI,
@@ -257,4 +280,5 @@ export {
   getItemDataAPI,
   updateItemDataAPI,
   deleteQbankAPI,
+  addAnswerDataAPI,
 };

@@ -1,25 +1,15 @@
 import {
   getGroupAPI,
-  addQuestionDataAPI,
   getQuestionDataAPI,
-  addItemDataAPI,
   getItemDataAPI,
-  updateQuestionDataAPI,
-  deleteItemDataAPI,
-  updateItemDataAPI,
+  addAnswerDataAPI,
 } from "./common_api.js";
 import {
   MULTIPLE_SELECTION,
   SUBJECTIVE,
   QUESTION_MODE,
 } from "./common_params.js";
-import {
-  generateUUID,
-  deepEqual,
-  getDate,
-  generateCategoryID,
-  renderPagingNumber,
-} from "../../../utility/utility.js";
+import { generateUUID } from "../../../utility/utility.js";
 
 //초기 셋팅
 prepare();
@@ -54,7 +44,7 @@ async function prepare() {
       data.items = [];
     });
 
-    // 답변 데이터 가져와서 추가
+    // 답변 항목 데이터 가져와서 추가
     await Promise.all(
       get_question_data.map(async (data) => {
         try {
@@ -94,11 +84,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //다음 버튼 클릭
   btn_question_next.addEventListener("click", (event) => {
-    // //항목 체크
-    // const check_value = checkValueQuestionData();
-    // if (check_value === false) {
-    //   return;
-    // }
+    //항목 체크
+    const check_value = checkValueQuestionData();
+    if (check_value === false) {
+      alert("답변을 입력해주세요.");
+      return;
+    }
 
     saveAnswerData();
     setQuestion("next");
@@ -107,11 +98,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //이전 버튼 클릭
   btn_question_prev.addEventListener("click", (event) => {
-    // //항목 체크
-    // const check_value = checkValueQuestionData();
-    // if (check_value === false) {
-    //   return;
-    // }
+    const check_value = checkValueQuestionData();
+    if (check_value === false) {
+      alert("답변을 입력해주세요.");
+      return;
+    }
 
     saveAnswerData();
     setQuestion("prev");
@@ -120,80 +111,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //만들기 버튼 클릭
   btn_question_save.addEventListener("click", async (event) => {
-    // //항목 체크
-    // const check_value = checkValueQuestionData();
-    // if (check_value === false) {
-    //   return;
-    // }
+    const check_value = checkValueQuestionData();
+    if (check_value === false) {
+      alert("답변을 입력해주세요.");
+      return;
+    }
 
-    saveQuestionData();
+    saveAnswerData();
 
-    if (confirm("질문을 생성 하시겠습니까?") === true) {
-      await createQuestionAndItem(question_data);
-      console.log("저장");
+    if (confirm("답변을 제출하시겠습니까?") === true) {
+      await createAnswer(answer_data);
     } else {
       return false;
     }
   });
 });
 
-//question_data 서버에 저장하기
-async function createQuestionAndItem(question_data) {
+//answer_data 서버에 저장하기
+async function createAnswer(answer_data) {
+  const answer_uuid = generateUUID();
+
   try {
-    await createQuestionData(question_data);
+    for (const data of answer_data) {
+      for (const item of data.question_answer) {
+        const new_data = {
+          answer_uuid: answer_uuid,
+          group_uuid: data.group_uuid,
+          question_uuid: data.question_uuid,
+          question_title: data.question_title,
+          answer: item.answer,
+          answer_key: item.key || "",
+        };
+
+        await addAnswerDataAPI(new_data);
+      }
+    }
     // 리디렉션 코드
     // window.location.href = "./group.html";
   } catch (error) {
     console.error("데이터 추가 중 오류 발생:", error);
     // 오류 처리 코드 추가
-  }
-
-  //질문 데이터 & 답변 데이터 추가
-  async function createDataToAPI(data) {
-    await addQuestionDataAPI(data);
-    if (Array.isArray(data.items)) {
-      for (const item of data.items) {
-        await addItemDataAPI(item);
-      }
-    }
-  }
-
-  //질문 별 함수 호출
-  async function createQuestionData(question_data) {
-    for (const data of question_data) {
-      await createDataToAPI(data);
-    }
-  }
-}
-
-//question_data 서버에 저장하기
-async function updateQuestionAndItem(question_data) {
-  try {
-    await updateQuestionData(question_data);
-    // 리디렉션 코드
-    // window.location.href = "./group.html";
-  } catch (error) {
-    console.error("데이터 추가 중 오류 발생:", error);
-    // 오류 처리 코드 추가
-  }
-
-  //질문 데이터 & 답변 데이터 추가
-  async function updateDataToAPI(data) {
-    await updateQuestionDataAPI(data);
-
-    await deleteItemDataAPI(data.question_uuid);
-    if (Array.isArray(data.items)) {
-      for (const item of data.items) {
-        await addItemDataAPI(item);
-      }
-    }
-  }
-
-  //질문 별 함수 호출
-  async function updateQuestionData(question_data) {
-    for (const data of question_data) {
-      await updateDataToAPI(data);
-    }
   }
 }
 
@@ -207,8 +164,6 @@ function setQuestion(direction) {
   setNavi();
   setButton();
   setQuestionTitle();
-  // resetQuestion();
-  renderItems();
   setQuestionData();
 }
 
@@ -241,12 +196,8 @@ function setButton() {
 
 function setQuestionData() {
   const question_title = document.querySelector("#question_title");
-
+  const current_question_data = question_data[current_question_num];
   if (question_data.length > 0) {
-    const current_question_data = question_data[current_question_num];
-    // const current_question_data_item_length =
-    //   current_question_data.items.length;
-
     //질문 내용
     question_title.innerHTML = current_question_data.question_title;
 
@@ -255,9 +206,20 @@ function setQuestionData() {
   }
 
   const question_items = document.querySelectorAll(`#question_items .item`);
+
   if (answer_data.length > 0) {
     const current_answer_data = answer_data[current_question_num];
     if (current_answer_data) {
+      //주관식 체크
+      const is_subjective = isSubjective();
+
+      if (is_subjective) {
+        const input_item_text = document.querySelector(`#input_item_text`);
+        input_item_text.value =
+          answer_data[current_question_num].question_answer[0].answer;
+        return;
+      }
+
       question_items.forEach((item, index) => {
         const item_index = index + 1;
         const question_item = document.getElementById(
@@ -318,36 +280,40 @@ function setNavi() {
   navi_num_col.classList.add("active");
 }
 
-// function selectedItem(value) {
-//   const select_item = items_count.querySelector(`option[value="${value}"]`);
-//   select_item.selected = true;
-// }
+function checkValueQuestionData() {
+  const current_question_data = question_data[current_question_num];
+  const question_items = document.querySelectorAll(
+    "#question_items > .item > input"
+  );
 
-// function subjectiveChange(option) {
-//   const subjective = document.querySelector("#subjective");
-//   if (option === true) {
-//     subjective.checked = true;
-//   } else {
-//     subjective.checked = false;
-//   }
-// }
+  //주관식 체크
+  const is_subjective = isSubjective();
 
-// function checkValueQuestionData() {
-//   const question_items = document.querySelectorAll(
-//     "#question_items > .item > input"
-//   );
+  if (is_subjective) {
+    const question_input_value = document.querySelector(
+      "#question_items input"
+    ).value;
 
-//   let checkedValue = false;
-//   for (let i = 0; i < question_items.length; i++) {
-//     if (question_items[i].checked) {
-//     }
-//   }
-//   return;
-// }
+    if (question_input_value === "" || question_input_value === undefined) {
+      return false;
+    }
+    return true;
+  }
+
+  let checked_value = false;
+  for (let i = 0; i < question_items.length; i++) {
+    if (question_items[i].checked) {
+      checked_value = true;
+    }
+  }
+
+  if (checked_value === false) {
+    return false;
+  }
+  return true;
+}
 
 function saveAnswerData() {
-  const question_items = document.querySelectorAll(`#question_items .item`);
-
   const new_data = {
     question_uuid: question_data[current_question_num].question_uuid,
     group_uuid: question_data[current_question_num].group_uuid,
@@ -355,7 +321,20 @@ function saveAnswerData() {
     question_answer: [],
   };
 
-  // console.log(question_data);
+  //주관식 체크
+  const is_subjective = isSubjective();
+
+  if (is_subjective) {
+    const input_item_text = document.querySelector(`#input_item_text`);
+    new_data.question_answer.push({
+      answer: input_item_text.value,
+    });
+
+    answer_data[current_question_num] = new_data;
+    return;
+  }
+
+  const question_items = document.querySelectorAll(`#question_items .item`);
 
   question_items.forEach((item, index) => {
     const input_item_title = item.querySelector(
@@ -372,32 +351,29 @@ function saveAnswerData() {
   });
 
   answer_data[current_question_num] = new_data;
-
-  console.log(answer_data);
 }
 
-// function resetQuestion() {
-//   const question_title = document.querySelector("#question_title");
-
-//   //질문 내용
-//   question_title.value = "";
-// }
-
 function renderItems(items_count_value) {
+  const current_question_data = question_data[current_question_num];
   const question_items = document.querySelector("#question_items");
-  const multiple_selection =
-    question_data[current_question_num].multiple_selection;
+  const multiple_selection = current_question_data.multiple_selection;
 
   question_items.innerHTML = "";
 
-  // if (!items_count_value && items_count_value !== 0) {
-  //   items_count_value = default_items_count;
-  // }
+  //주관식 체크
+  const is_subjective = isSubjective();
+
+  if (is_subjective) {
+    let add_content = `
+    <input type="text" class="form-control" id="input_item_text" />
+    `;
+    question_items.insertAdjacentHTML("beforeend", add_content);
+  }
 
   for (let i = 0; i < items_count_value; i++) {
     const question_num = i + 1;
-    const item_title = question_data[current_question_num].items[i].item_title;
-    const item_key = question_data[current_question_num].items[i].item_key;
+    const item_title = current_question_data.items[i].item_title;
+    const item_key = current_question_data.items[i].item_key;
 
     let add_content = "";
 
@@ -452,6 +428,7 @@ function toggleItem(item) {
 
 function itemCheckedActive() {
   const question_item = document.querySelectorAll("#question_items .item");
+
   question_item.forEach((item, index) => {
     const is_checked = item.querySelector(
       `input#input_item_${index + 1}`
@@ -462,4 +439,12 @@ function itemCheckedActive() {
       item.classList.remove("active");
     }
   });
+}
+
+function isSubjective() {
+  const current_question_data = question_data[current_question_num];
+  if (current_question_data.subjective === SUBJECTIVE.true) {
+    return true;
+  }
+  return false;
 }
