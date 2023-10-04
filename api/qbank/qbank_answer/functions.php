@@ -34,7 +34,7 @@ function getAnswerList() {
 
         // 게시물 조회 쿼리 생성
         $query = 'SELECT * FROM ' . $db_table;
-        $query .= " LIMIT $start, $per_page";
+        $query .= ' ORDER BY datetime DESC LIMIT ' . $start . ', ' . $per_page;
 
         // 쿼리 실행 및 결과 가져오기
         $stmt = $db->prepare($query);
@@ -60,10 +60,12 @@ function createAnswer() {
     try {
         $data = json_decode(file_get_contents('php://input'), true);
         $group_uuid = $data['group_uuid'];  
+        $group_title = $data['group_title'];  
         $answer_uuid = $data['answer_uuid'];
       
-        $query = $db->prepare("INSERT INTO $db_table (group_uuid, answer_uuid, datetime) VALUES (:group_uuid, :answer_uuid, NOW())");
+        $query = $db->prepare("INSERT INTO $db_table (group_uuid, group_title, answer_uuid, datetime) VALUES (:group_uuid,:group_title, :answer_uuid, NOW())");
         $query->bindParam(':group_uuid', $group_uuid);
+        $query->bindParam(':group_title', $group_title);
         $query->bindParam(':answer_uuid', $answer_uuid);
         $query->execute();
     } catch (Exception $e) {
@@ -76,10 +78,12 @@ function updateAnswer($answer_uuid) {
     try {
         $data = json_decode(file_get_contents('php://input'), true); 
         $group_uuid = $data['group_uuid'];  
+        $group_title = $data['group_title']; 
         $answer_uuid = $data['answer_uuid'];
 
-        $query = $db->prepare("UPDATE $db_table SET group_uuid = :group_uuid, datetime = NOW() WHERE answer_uuid = :answer_uuid");
+        $query = $db->prepare("UPDATE $db_table SET group_uuid = :group_uuid, group_title = :group_title, datetime = NOW() WHERE answer_uuid = :answer_uuid");
         $query->bindParam(':group_uuid', $group_uuid);
+        $query->bindParam(':group_title', $group_title);
         $query->execute();
     } catch (Exception $e) {
         echo "createPost에러" . $e->getMessage();

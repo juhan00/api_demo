@@ -17,7 +17,6 @@ function getAnswerItem($answer_uuid) {
 
 function createAnswerItem() {
     global $db, $db_table;
-    
     try {
         $data = json_decode(file_get_contents('php://input'), true);
         $answer_uuid = $data['answer_uuid'];

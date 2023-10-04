@@ -257,6 +257,7 @@ async function addAnswerDataAPI(item) {
       },
       body: JSON.stringify({
         group_uuid: item.group_uuid,
+        group_title: item.group_title,
         answer_uuid: item.answer_uuid,
       }),
     });
@@ -310,6 +311,54 @@ async function getAnswerListAPI(page, per_page) {
   }
 }
 
+//답변 가져오기
+async function getAnswerAPI(answer_uuid) {
+  const fetch_url = `../../api/${QBANK_ANSWER_NAME}/?answer_uuid=${answer_uuid}`;
+
+  try {
+    const response = await fetch(fetch_url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      // console.log(result);
+      return result;
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+//답변 아이템 가져오기
+async function getAnswerItemAPI(answer_uuid) {
+  const fetch_url = `../../api/${QBANK_ANSWER_ITEM_NAME}/?answer_uuid=${answer_uuid}`;
+
+  try {
+    const response = await fetch(fetch_url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      // console.log(result);
+      return result;
+    } else {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 export {
   getGroupAPI,
   getGroupListAPI,
@@ -325,4 +374,6 @@ export {
   addAnswerDataAPI,
   addAnswerItemDataAPI,
   getAnswerListAPI,
+  getAnswerAPI,
+  getAnswerItemAPI,
 };

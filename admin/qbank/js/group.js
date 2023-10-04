@@ -70,7 +70,11 @@ function renderGroupList(group_list_data) {
     const btn_group_delete = document.querySelectorAll("#btn_group_delete");
     btn_group_delete.forEach((button) => {
       button.addEventListener("click", (event) => {
-        if (confirm("삭제하시겠습니까?") === true) {
+        if (
+          confirm(
+            "해당 질문그룹 답변 데이터들도 모두 삭제됩니다.\n삭제하시겠습니까?"
+          ) === true
+        ) {
           deleteQbank(event.target);
         } else {
           return false;

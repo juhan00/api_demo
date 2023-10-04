@@ -9,7 +9,6 @@ function prepare() {
   //그룹 리스트 가져오기
   setAnswerList(1, PER_PAGE);
 }
-å;
 
 //페이지 로드 후
 document.addEventListener("DOMContentLoaded", function () {});
@@ -39,11 +38,11 @@ function renderAnswerList(answer_list_data) {
         <tr class="border border-top-0 text-center" style="height: 60px">
           <td class="col-1">${(page - 1) * per_page + (index + 1)}</td>
           <td class="col-7 text-start ps-4">
-            <a href="./viewer.html?group_uuid=${item.group_uuid}" id="${
-        item.group_uuid
+            <a href="./answer.html?answer_uuid=${item.answer_uuid}" id="${
+        item.answer_uuid
       }">${item.group_title}</a>
           </td>
-          <td class="col-2">${getDate(item.datetime)}</td>
+          <td class="col-2">${item.datetime}</td>
         </tr>
       `;
       board_list.insertAdjacentHTML("beforeend", add_content);

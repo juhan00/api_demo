@@ -21,8 +21,6 @@ let question_data = [];
 let answer_item_data = [];
 let question_mode = QUESTION_MODE.create;
 
-const default_items_count = 4;
-
 async function prepare() {
   const current_url = window.location.href;
   const url = new URL(current_url); // URL 객체 생성
@@ -128,14 +126,75 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// //answer_data 서버에 저장하기
+// async function createAnswer(answer_item_data) {
+//   try {
+//     // UUID 생성
+//     const answer_uuid = generateUUID();
+
+//     // 그룹 UUID 가져오기
+//     const group_uuid = question_data[0].group_uuid;
+
+//     // 그룹 데이터 가져오기
+//     const get_group_data = await getGroupAPI(group_uuid);
+
+//     if (!get_group_data) {
+//       return;
+//     }
+
+//     const new_data = {
+//       group_uuid: group_uuid,
+//       group_title: get_group_data.group_title,
+//       answer_uuid: answer_uuid,
+//     };
+
+//     // 답변 데이터 추가
+//     await addAnswerDataAPI(new_data);
+
+//     // Promise 배열 생성
+//     const promises = [];
+
+//     for (const datas of answer_item_data) {
+//       for (const item of datas) {
+//         const new_item_data = {
+//           answer: item.answer,
+//           answer_key: item.key || "",
+//           answer_uuid: answer_uuid,
+//           question_uuid: item.question_uuid,
+//           question_title: item.question_title,
+//         };
+//         promises.push(addAnswerItemDataAPI(new_item_data));
+//       }
+//     }
+//     // 병렬로 모든 항목 추가
+//     await Promise.all(promises);
+
+//     // 리디렉션 코드
+//     window.location.href = "./viewer_list.html";
+//   } catch (error) {
+//     console.error("데이터 추가 중 오류 발생:", error);
+//     // 오류 처리 코드 추가
+//   }
+// }
+
 //answer_data 서버에 저장하기
 async function createAnswer(answer_item_data) {
-  const answer_uuid = generateUUID();
   try {
+    const answer_uuid = generateUUID();
+    const group_uuid = question_data[0].group_uuid;
+
+    const get_group_data = await getGroupAPI(group_uuid);
+
+    if (!get_group_data) {
+      return;
+    }
+
     const new_data = {
-      group_uuid: question_data[0].group_uuid,
+      group_uuid: group_uuid,
+      group_title: get_group_data.group_title,
       answer_uuid: answer_uuid,
     };
+
     await addAnswerDataAPI(new_data);
 
     for (const datas of answer_item_data) {
@@ -151,7 +210,7 @@ async function createAnswer(answer_item_data) {
       }
     }
     // 리디렉션 코드
-    // window.location.href = "./group.html";
+    window.location.href = "./viewer_list.html";
   } catch (error) {
     console.error("데이터 추가 중 오류 발생:", error);
     // 오류 처리 코드 추가
