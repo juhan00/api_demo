@@ -262,7 +262,7 @@ function setQuestionData() {
   const current_question_data = question_data[current_question_num];
   if (question_data.length > 0) {
     //질문 내용
-    question_title.innerHTML = current_question_data.question_title;
+    question_title.innerHTML = `Q. ${current_question_data.question_title}`;
 
     const items_count_data = current_question_data.items_count;
     renderItems(items_count_data);
@@ -272,6 +272,7 @@ function setQuestionData() {
 
   if (answer_item_data.length > 0) {
     const current_answer_item_data = answer_item_data[current_question_num];
+
     if (current_answer_item_data) {
       //주관식 체크
       const is_subjective = isSubjective();
@@ -283,7 +284,7 @@ function setQuestionData() {
         return;
       }
 
-      question_items.forEach((item, index) => {
+      question_items.forEach((data, index) => {
         const item_index = index + 1;
         const question_item = document.getElementById(
           `input_item_${item_index}`
@@ -291,8 +292,7 @@ function setQuestionData() {
         const question_item_key_value = document.getElementById(
           `input_key_${item_index}`
         ).value;
-        const question_answer = current_answer_item_data.question_answer;
-
+        const question_answer = current_answer_item_data;
         if (
           question_answer.some((item) => question_item_key_value === item.key)
         ) {
@@ -344,7 +344,6 @@ function setNavi() {
 }
 
 function checkValueQuestionData() {
-  const current_question_data = question_data[current_question_num];
   const question_items = document.querySelectorAll(
     "#question_items > .item > input"
   );
@@ -415,6 +414,7 @@ function saveAnswerItemData() {
   });
 
   answer_item_data[current_question_num] = new_data;
+  console.log(answer_item_data);
 }
 
 function renderItems(items_count_value) {
