@@ -438,8 +438,7 @@ function renderItems(items_count_value) {
       add_content = `
         <div class="item border rounded-3 p-3 pt-3 mt-3 mb-3">
           <div class="row">
-            <div class="col-auto">${question_num}</div>
-            <div class="col p-0">${item_title}</div>
+            <div class="col">${item_title}</div>
           </div>
           <input type="checkbox" class="form-control" value="${item_title}" id="input_item_${question_num}" hidden />
           <input type="checkbox" class="form-control" value="${item_key}" id="input_key_${question_num}" hidden />
@@ -449,8 +448,7 @@ function renderItems(items_count_value) {
       add_content = `
         <div class="item border rounded-3 p-3 pt-3 mt-3 mb-3">
           <div class="row">
-            <div class="col-auto">${question_num}</div>
-            <div class="col p-0">${item_title}</div>
+            <div class="col">${item_title}</div>
           </div>
           <input type="radio" class="form-control" value="${item_title}" id="input_item_${question_num}" name="input_item" hidden />
           <input type="radio" class="form-control" value="${item_key}" id="input_key_${question_num}" hidden />
