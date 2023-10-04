@@ -1,25 +1,22 @@
 import {
-  getGroupAPI,
-  addQuestionDataAPI,
-  getQuestionDataAPI,
+  deepEqual,
+  generateUUID,
+  hasDuplicates,
+} from "../../../utility/utility.js";
+import {
   addItemDataAPI,
-  getItemDataAPI,
-  updateQuestionDataAPI,
+  addQuestionDataAPI,
   deleteItemDataAPI,
-  updateItemDataAPI,
+  getGroupAPI,
+  getItemDataAPI,
+  getQuestionDataAPI,
+  updateQuestionDataAPI,
 } from "./common_api.js";
 import {
   MULTIPLE_SELECTION,
-  SUBJECTIVE,
   QUESTION_MODE,
+  SUBJECTIVE,
 } from "./common_params.js";
-import {
-  generateUUID,
-  deepEqual,
-  getDate,
-  generateCategoryID,
-  renderPagingNumber,
-} from "../../../utility/utility.js";
 
 //초기 셋팅
 prepare();
@@ -200,7 +197,7 @@ async function createQuestionAndItem(question_data) {
   try {
     await createQuestionData(question_data);
     // 리디렉션 코드
-    // window.location.href = "./group.html";
+    window.location.href = "./group.html";
   } catch (error) {
     console.error("데이터 추가 중 오류 발생:", error);
     // 오류 처리 코드 추가
@@ -409,6 +406,7 @@ function checkValueQuestionData() {
     alert("질문 내용을 입력해주세요.");
     return false;
   }
+  let key_array = [];
   for (let i = 0; i < Number(items_count.value); i++) {
     const item_title = document.querySelector(`#item_title_${i + 1}`);
     const item_key = document.querySelector(`#item_key_${i + 1}`);
@@ -422,6 +420,11 @@ function checkValueQuestionData() {
       alert(`답변${i + 1} KEY를 입력해주세요.`);
       return false;
     }
+    key_array.push(item_key.value);
+  }
+  if (hasDuplicates(key_array)) {
+    alert("답변 KEY가 중복되지 않게 작성해 주세요.");
+    return false;
   }
 }
 

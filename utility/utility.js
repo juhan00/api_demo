@@ -150,6 +150,10 @@ function deepEqual(x, y) {
   else return true;
 }
 
+function hasDuplicates(array) {
+  return array.some((value, index, self) => self.indexOf(value) !== index);
+}
+
 export {
   getDate,
   generateCategoryID,
@@ -159,4 +163,5 @@ export {
   handleButtonClick,
   renderPagingNumber,
   deepEqual,
+  hasDuplicates,
 };

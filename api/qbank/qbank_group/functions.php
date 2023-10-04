@@ -34,7 +34,7 @@ function getGroupList() {
 
         // 게시물 조회 쿼리 생성
         $query = 'SELECT * FROM ' . $db_table;
-        $query .= " LIMIT $start, $per_page";
+        $query .= ' ORDER BY datetime DESC LIMIT ' . $start . ', ' . $per_page;
 
         // 쿼리 실행 및 결과 가져오기
         $stmt = $db->prepare($query);
