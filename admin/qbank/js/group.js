@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
   });
+
+  //목록보기 버튼 클릭
+  btn_go_answer_list.addEventListener("click", (event) => {
+    window.location.href = "./answer_list.html";
+  });
 });
 
 async function setGroupList(page, per_page) {

@@ -11,7 +11,12 @@ function prepare() {
 }
 
 //페이지 로드 후
-document.addEventListener("DOMContentLoaded", function () {});
+document.addEventListener("DOMContentLoaded", function () {
+  //목록보기 버튼 클릭
+  btn_go_group.addEventListener("click", (event) => {
+    window.location.href = "./group.html";
+  });
+});
 
 async function setAnswerList(page, per_page) {
   try {

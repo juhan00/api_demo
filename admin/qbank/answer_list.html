@@ -13,8 +13,8 @@
     <script type="module" src="./js/answer_list.js"></script>
   </head>
   <body>
-    <div class="container-md p-3 pt-5">
-      <div class="title mb-2 mt-5 fs-5 fw-bold">답변 리스트</div>
+    <div class="container-md">
+      <div class="title mb-2 mt-3 fs-5 fw-bold">답변 리스트</div>
 
       <table class="w-100" id="answer_list">
         <thead>
@@ -35,6 +35,18 @@
       <div class="button mt-4">
         <div id="paging_number" class="button w-100 text-center">
           <!-- 페이징 영역 -->
+        </div>
+      </div>
+
+      <div class="button mt-2">
+        <div class="d-flex justify-content-end">
+          <button
+            type="button"
+            id="btn_go_group"
+            class="btn btn-primary justify-content-start"
+          >
+            질문 만들기
+          </button>
         </div>
       </div>
     </div>
