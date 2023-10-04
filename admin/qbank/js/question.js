@@ -145,12 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //이전 버튼 클릭
   btn_question_prev.addEventListener("click", (event) => {
-    //항목 체크
-    const check_value = checkValueQuestionData();
-    if (check_value === false) {
-      return;
-    }
-
     saveQuestionData();
     setQuestion("prev");
     // console.log(question_data);

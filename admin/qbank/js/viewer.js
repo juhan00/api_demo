@@ -97,12 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //이전 버튼 클릭
   btn_question_prev.addEventListener("click", (event) => {
-    const check_value = checkValueQuestionData();
-    if (check_value === false) {
-      alert("답변을 입력해주세요.");
-      return;
-    }
-
     saveAnswerItemData();
     setQuestion("prev");
     // console.log(question_data);
@@ -414,7 +408,6 @@ function saveAnswerItemData() {
   });
 
   answer_item_data[current_question_num] = new_data;
-  console.log(answer_item_data);
 }
 
 function renderItems(items_count_value) {
