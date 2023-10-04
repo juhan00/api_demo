@@ -8,24 +8,22 @@ switch ($method) {
     case 'GET':
         if(isset($_GET['answer_uuid'])) {
             $answer_uuid = $_GET['answer_uuid'];
-            getAnswer($answer_uuid);
-        } else{
-            getAnswerList();
+            getAnswerItem($answer_uuid);
         }
         break;
     case 'POST':  
-        createAnswer();
+        createAnswerItem();
         break;
     case 'PUT':
-        if(isset($_GET['answer_uuid'])) {
-            $answer_uuid = $_GET['answer_uuid'];
-            updateAnswer($answer_uuid);
-        }
+        if(isset($_GET['id'])){
+            $id = $_GET['id'];
+            updateAnswerItem($id);
+        }  
         break;
     case 'DELETE':
-        if(isset($_GET['answer_uuid'])) {
-            $answer_uuid = $_GET['answer_uuid'];
-            deleteAnswer($answer_uuid);
+        if(isset($_GET['id'])) {
+            $id = $_GET['id'];
+            deleteAnswerItem($id);
         }
         break;
     default:

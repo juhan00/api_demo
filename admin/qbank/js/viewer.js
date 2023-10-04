@@ -3,6 +3,7 @@ import {
   getQuestionDataAPI,
   getItemDataAPI,
   addAnswerDataAPI,
+  addAnswerItemDataAPI,
 } from "./common_api.js";
 import {
   MULTIPLE_SELECTION,
@@ -17,7 +18,7 @@ let current_question_num = 0;
 let current_group_uuid = "";
 let questions_count = 0;
 let question_data = [];
-let answer_data = [];
+let answer_item_data = [];
 let question_mode = QUESTION_MODE.create;
 
 const default_items_count = 4;
@@ -91,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    saveAnswerData();
+    saveAnswerItemData();
     setQuestion("next");
     // console.log(question_data);
   });
@@ -104,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    saveAnswerData();
+    saveAnswerItemData();
     setQuestion("prev");
     // console.log(question_data);
   });
@@ -117,10 +118,10 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    saveAnswerData();
+    saveAnswerItemData();
 
     if (confirm("답변을 제출하시겠습니까?") === true) {
-      await createAnswer(answer_data);
+      await createAnswer(answer_item_data);
     } else {
       return false;
     }
@@ -128,22 +129,25 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //answer_data 서버에 저장하기
-async function createAnswer(answer_data) {
+async function createAnswer(answer_item_data) {
   const answer_uuid = generateUUID();
-
   try {
-    for (const data of answer_data) {
-      for (const item of data.question_answer) {
-        const new_data = {
-          answer_uuid: answer_uuid,
-          group_uuid: data.group_uuid,
-          question_uuid: data.question_uuid,
-          question_title: data.question_title,
+    const new_data = {
+      group_uuid: question_data[0].group_uuid,
+      answer_uuid: answer_uuid,
+    };
+    await addAnswerDataAPI(new_data);
+
+    for (const datas of answer_item_data) {
+      for (const item of datas) {
+        const new_item_data = {
           answer: item.answer,
           answer_key: item.key || "",
+          answer_uuid: answer_uuid,
+          question_uuid: item.question_uuid,
+          question_title: item.question_title,
         };
-
-        await addAnswerDataAPI(new_data);
+        await addAnswerItemDataAPI(new_item_data);
       }
     }
     // 리디렉션 코드
@@ -207,16 +211,16 @@ function setQuestionData() {
 
   const question_items = document.querySelectorAll(`#question_items .item`);
 
-  if (answer_data.length > 0) {
-    const current_answer_data = answer_data[current_question_num];
-    if (current_answer_data) {
+  if (answer_item_data.length > 0) {
+    const current_answer_item_data = answer_item_data[current_question_num];
+    if (current_answer_item_data) {
       //주관식 체크
       const is_subjective = isSubjective();
 
       if (is_subjective) {
         const input_item_text = document.querySelector(`#input_item_text`);
         input_item_text.value =
-          answer_data[current_question_num].question_answer[0].answer;
+          answer_item_data[current_question_num].question_answer[0].answer;
         return;
       }
 
@@ -228,7 +232,7 @@ function setQuestionData() {
         const question_item_key_value = document.getElementById(
           `input_key_${item_index}`
         ).value;
-        const question_answer = current_answer_data.question_answer;
+        const question_answer = current_answer_item_data.question_answer;
 
         if (
           question_answer.some((item) => question_item_key_value === item.key)
@@ -313,24 +317,23 @@ function checkValueQuestionData() {
   return true;
 }
 
-function saveAnswerData() {
-  const new_data = {
-    question_uuid: question_data[current_question_num].question_uuid,
-    group_uuid: question_data[current_question_num].group_uuid,
-    question_title: question_data[current_question_num].question_title,
-    question_answer: [],
-  };
+function saveAnswerItemData() {
+  const new_data = [];
+  // console.log(question_data);
+  const current_question_data = question_data[current_question_num];
 
   //주관식 체크
   const is_subjective = isSubjective();
 
   if (is_subjective) {
     const input_item_text = document.querySelector(`#input_item_text`);
-    new_data.question_answer.push({
+    new_data.push({
+      question_uuid: current_question_data.question_uuid,
+      question_title: current_question_data.question_title,
       answer: input_item_text.value,
     });
 
-    answer_data[current_question_num] = new_data;
+    answer_item_data[current_question_num] = new_data;
     return;
   }
 
@@ -343,14 +346,16 @@ function saveAnswerData() {
     const input_item_key = item.querySelector(`input#input_key_${index + 1}`);
     const is_checked = input_item_title.checked;
     if (is_checked) {
-      new_data.question_answer.push({
+      new_data.push({
+        question_uuid: current_question_data.question_uuid,
+        question_title: current_question_data.question_title,
         answer: input_item_title.value,
         key: input_item_key.value,
       });
     }
   });
 
-  answer_data[current_question_num] = new_data;
+  answer_item_data[current_question_num] = new_data;
 }
 
 function renderItems(items_count_value) {
