@@ -19,13 +19,15 @@ function createAnswerItem() {
     global $db, $db_table;
     try {
         $data = json_decode(file_get_contents('php://input'), true);
+        $group_uuid = $data['group_uuid'];
         $answer_uuid = $data['answer_uuid'];
         $answer = $data['answer'];
         $answer_key = $data['answer_key'];
         $question_uuid = $data['question_uuid'];
         $question_title = $data['question_title'];
       
-        $query = $db->prepare("INSERT INTO $db_table (answer_uuid, answer, answer_key, question_uuid, question_title) VALUES (:answer_uuid, :answer, :answer_key, :question_uuid, :question_title)");
+        $query = $db->prepare("INSERT INTO $db_table (group_uuid, answer_uuid, answer, answer_key, question_uuid, question_title) VALUES (:group_uuid, :answer_uuid, :answer, :answer_key, :question_uuid, :question_title)");
+        $query->bindParam(':group_uuid', $group_uuid);
         $query->bindParam(':answer_uuid', $answer_uuid);
         $query->bindParam(':answer', $answer);
         $query->bindParam(':answer_key', $answer_key);
@@ -47,13 +49,15 @@ function updateAnswerItem($id) {
         $answer_key = $data['answer_key'];
         $question_uuid = $data['question_uuid'];
         $question_title = $data['question_title'];
+        $group_uuid = $data['group_uuid'];
 
-        $query = $db->prepare("UPDATE $db_table SET answer = :answer, answer_key = :answer_key, question_uuid = :question_uuid, question_title = :question_title WHERE id = :id");
+        $query = $db->prepare("UPDATE $db_table SET answer = :answer, answer_key = :answer_key, question_uuid = :question_uuid, question_title = :question_title, group_uuid = :group_uuid WHERE id = :id");
         $query->bindParam(':question_title', $question_title);
         $query->bindParam(':answer', $answer);
         $query->bindParam(':answer_key', $answer_key);
         $query->bindParam(':question_uuid', $question_uuid);
         $query->bindParam(':question_title', $question_title);
+        $query->bindParam(':group_uuid', $group_uuid);
         $query->bindParam(':id', $id);
         $query->execute();
     } catch (Exception $e) {

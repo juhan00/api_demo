@@ -199,6 +199,7 @@ async function createAnswer(answer_item_data) {
           answer_uuid: answer_uuid,
           question_uuid: item.question_uuid,
           question_title: item.question_title,
+          group_uuid: group_uuid,
         };
         await addAnswerItemDataAPI(new_item_data);
       }

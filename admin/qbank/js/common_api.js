@@ -280,6 +280,7 @@ async function addAnswerItemDataAPI(item) {
         answer_uuid: item.answer_uuid,
         question_uuid: item.question_uuid,
         question_title: item.question_title,
+        group_uuid: item.group_uuid,
       }),
     });
   } catch (error) {
