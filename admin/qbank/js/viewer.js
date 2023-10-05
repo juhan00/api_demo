@@ -275,7 +275,7 @@ function setQuestionData() {
       if (is_subjective) {
         const input_item_text = document.querySelector(`#input_item_text`);
         input_item_text.value =
-          answer_item_data[current_question_num].question_answer[0].answer;
+          answer_item_data[current_question_num][0].answer;
         return;
       }
 
